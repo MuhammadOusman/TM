@@ -24,11 +24,13 @@ const PropertyDetail = () => {
   const { id } = useParams();
 
   // Fetch property with React Query
-  const { data: property, isLoading, error } = useQuery({
+  const { data: propertyResponse, isLoading, error } = useQuery({
     queryKey: ['property', id],
     queryFn: () => propertiesAPI.getById(id),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  const property = propertyResponse?.data;
 
   // Mock property data as fallback
   const mockProperty = {
@@ -70,7 +72,19 @@ const PropertyDetail = () => {
   };
 
   // Use fetched property if available, otherwise use mock
-  const displayProperty = property || mockProperty;
+  let displayProperty = property || mockProperty;
+
+  // Create a new object with fallbacks to avoid mutating original
+  displayProperty = {
+    ...displayProperty,
+    images: (displayProperty.images && displayProperty.images.length > 0) 
+      ? displayProperty.images 
+      : mockProperty.images,
+    amenities: (displayProperty.amenities && displayProperty.amenities.length > 0) 
+      ? displayProperty.amenities 
+      : mockProperty.amenities,
+    description: displayProperty.description || mockProperty.description,
+  };
 
   // Show loading skeleton
   if (isLoading) {
@@ -289,32 +303,6 @@ const PropertyDetail = () => {
                   ))}
                 </Grid>
 
-                <Divider sx={{ my: 3 }} />
-
-                <Typography variant="h5" sx={{ fontWeight: 700, color: 'primary.main', mb: 3 }}>
-                  Nearby Attractions
-                </Typography>
-                <Grid container spacing={2}>
-                  {displayProperty.nearby.map((place, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Box
-                        sx={{
-                          p: 2,
-                          borderRadius: 2,
-                          bgcolor: 'background.paper',
-                          border: '1px solid rgba(0,0,0,0.1)',
-                        }}
-                      >
-                        <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                          {place.name}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                          {place.distance} away
-                        </Typography>
-                      </Box>
-                    </Grid>
-                  ))}
-                </Grid>
               </Paper>
             </motion.div>
           </Grid>
@@ -339,10 +327,10 @@ const PropertyDetail = () => {
               >
                 <Box sx={{ textAlign: 'center', mb: 3 }}>
                   <Typography variant="h3" sx={{ fontWeight: 800, color: '#a58654', mb: 1 }}>
-                    ${displayProperty.price}
+                    AED {displayProperty.price?.toLocaleString()}
                   </Typography>
                   <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-                    per night
+                    Total Price
                   </Typography>
                 </Box>
 

@@ -167,8 +167,47 @@ const Properties = () => {
     },
   ];
 
-  // Use fetched data if available, otherwise use mock data
-  const properties = fetchedProperties && fetchedProperties.length > 0 ? fetchedProperties : mockProperties;
+  // Use database data as primary source
+  const properties = fetchedProperties?.data || [];
+
+  // Filter properties based on search and filters
+  const filteredProperties = properties.filter((property) => {
+    // Search term filter (search in title and location)
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = !searchTerm || 
+      property.title?.toLowerCase().includes(searchLower) || 
+      property.location?.toLowerCase().includes(searchLower);
+
+    // Property type filter
+    const matchesType = propertyType === 'all' || property.type === propertyType;
+
+    // Location filter
+    const matchesLocation = location === 'all' || property.location === location;
+
+    // Price range filter
+    let matchesPrice = true;
+    if (priceRange !== 'all') {
+      const price = parseFloat(property.price);
+      switch (priceRange) {
+        case '0-500':
+          matchesPrice = price <= 500;
+          break;
+        case '500-1000':
+          matchesPrice = price > 500 && price <= 1000;
+          break;
+        case '1000-2000':
+          matchesPrice = price > 1000 && price <= 2000;
+          break;
+        case '2000+':
+          matchesPrice = price > 2000;
+          break;
+        default:
+          matchesPrice = true;
+      }
+    }
+
+    return matchesSearch && matchesType && matchesLocation && matchesPrice;
+  });
 
   const locations = ['all', 'Downtown Dubai', 'Dubai Marina', 'Business Bay', 'JVC', 'Palm Jumeirah', 'City Walk', 'DIFC', 'Arabian Ranches'];
   const propertyTypes = ['all', 'Apartment', 'Villa', 'Townhouse'];
@@ -322,12 +361,12 @@ const Properties = () => {
         <Container maxWidth="xl">
           <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-              Showing {properties.length} properties
+              Showing {filteredProperties.length} properties
             </Typography>
           </Box>
 
           <Grid container spacing={4}>
-            {properties.map((property, index) => (
+            {filteredProperties.map((property, index) => (
               <Grid item xs={12} sm={6} lg={4} key={property.id}>
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -369,7 +408,7 @@ const Properties = () => {
                         className="property-image"
                         component="img"
                         height="280"
-                        image={property.image}
+                        image={property.images?.[0] || property.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80'}
                         alt={property.title}
                         sx={{
                           transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',

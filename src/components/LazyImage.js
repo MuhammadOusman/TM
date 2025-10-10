@@ -7,6 +7,10 @@ const LazyImage = ({ src, alt = '', style = {}, className, aspectRatio, ...rest 
   const imgRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
   const [inView, setInView] = useState(false);
+  const [error, setError] = useState(false);
+
+  // Fallback image for errors
+  const fallbackImage = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80';
 
   useEffect(() => {
     if (!imgRef.current) return;
@@ -39,9 +43,14 @@ const LazyImage = ({ src, alt = '', style = {}, className, aspectRatio, ...rest 
     >
       {inView && (
         <img
-          src={src}
+          src={error ? fallbackImage : src}
           alt={alt}
           onLoad={() => setLoaded(true)}
+          onError={() => {
+            console.warn(`Failed to load image: ${src}, using fallback`);
+            setError(true);
+            setLoaded(true);
+          }}
           style={{
             width: '100%',
             height: '100%',

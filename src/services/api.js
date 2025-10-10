@@ -9,11 +9,8 @@ export const propertiesAPI = {
   getAll: async (filters = {}) => {
     let query = supabase
       .from('properties')
-      .select(`
-        *,
-        property_images (*)
-      `)
-      .eq('status', 'active')
+      .select('*')
+      .eq('status', 'available')
       .order('created_at', { ascending: false });
 
     if (filters.location && filters.location !== 'all') {
@@ -34,16 +31,17 @@ export const propertiesAPI = {
   getById: async (id) => {
     const { data, error } = await supabase
       .from('properties')
-      .select(`
-        *,
-        property_images (*)
-      `)
+      .select('*')
       .eq('id', id)
       .single();
 
-    // Increment view count
+    // Increment view count (only if RPC function exists)
     if (data && !error) {
-      await supabase.rpc('increment_property_views', { property_uuid: id });
+      try {
+        await supabase.rpc('increment_property_views', { property_uuid: id });
+      } catch (err) {
+        console.log('View count increment skipped');
+      }
     }
 
     return { data, error };
@@ -83,10 +81,7 @@ export const propertiesAPI = {
   getAllAdmin: async () => {
     const { data, error } = await supabase
       .from('properties')
-      .select(`
-        *,
-        property_images (count)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
     return { data, error };
   },

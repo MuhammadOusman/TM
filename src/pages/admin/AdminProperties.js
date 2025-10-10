@@ -52,6 +52,8 @@ const AdminProperties = () => {
   const { data: propertiesData, isLoading, error } = useQuery({
     queryKey: ['adminProperties'],
     queryFn: propertiesAPI.getAllAdmin,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
   });
   const properties = propertiesData?.data || [];
 
@@ -71,6 +73,19 @@ const AdminProperties = () => {
       propertiesAPI.update(id, { status: status === 'available' ? 'rented' : 'available' }),
     onSuccess: () => {
       queryClient.invalidateQueries(['adminProperties']);
+      queryClient.invalidateQueries(['properties']);
+      queryClient.invalidateQueries(['featured-properties']);
+    },
+  });
+
+  // Toggle featured mutation
+  const toggleFeaturedMutation = useMutation({
+    mutationFn: ({ id, featured }) =>
+      propertiesAPI.update(id, { featured: !featured }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['adminProperties']);
+      queryClient.invalidateQueries(['properties']);
+      queryClient.invalidateQueries(['featured-properties']);
     },
   });
 
@@ -113,6 +128,10 @@ const AdminProperties = () => {
 
   const handleToggleStatus = (property) => {
     toggleStatusMutation.mutate({ id: property.id, status: property.status });
+  };
+
+  const handleToggleFeatured = (property) => {
+    toggleFeaturedMutation.mutate({ id: property.id, featured: property.featured });
   };
 
   if (isLoading) {
@@ -226,6 +245,9 @@ const AdminProperties = () => {
                       Views
                     </TableCell>
                     <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }} align="center">
+                      Featured
+                    </TableCell>
+                    <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }} align="center">
                       Status
                     </TableCell>
                     <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }} align="center">
@@ -236,7 +258,7 @@ const AdminProperties = () => {
                 <TableBody>
                   {paginatedProperties.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} align="center" sx={{ py: 8, color: 'text.secondary' }}>
+                      <TableCell colSpan={9} align="center" sx={{ py: 8, color: 'text.secondary' }}>
                         No properties found
                       </TableCell>
                     </TableRow>
@@ -274,6 +296,20 @@ const AdminProperties = () => {
                             <VisibilityIcon sx={{ fontSize: '1rem', color: 'text.secondary' }} />
                             <Typography variant="body2">{property.views || 0}</Typography>
                           </Box>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Switch
+                            checked={property.featured || false}
+                            onChange={() => handleToggleFeatured(property)}
+                            sx={{
+                              '& .MuiSwitch-switchBase.Mui-checked': {
+                                color: '#D4AF37',
+                              },
+                              '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                backgroundColor: '#D4AF37',
+                              },
+                            }}
+                          />
                         </TableCell>
                         <TableCell align="center">
                           <Chip

@@ -16,6 +16,7 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Switch,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -69,6 +70,7 @@ const AdminPropertyForm = () => {
     area: '',
     amenities: [],
     status: 'available',
+    featured: false,
   });
 
   const [images, setImages] = useState([]);
@@ -77,11 +79,13 @@ const AdminPropertyForm = () => {
   const [error, setError] = useState('');
 
   // Fetch property data if editing
-  const { data: property, isLoading } = useQuery({
+  const { data: propertyResponse, isLoading } = useQuery({
     queryKey: ['property', id],
     queryFn: () => propertiesAPI.getById(id),
     enabled: isEditing,
   });
+
+  const property = propertyResponse?.data;
 
   useEffect(() => {
     if (property) {
@@ -96,6 +100,7 @@ const AdminPropertyForm = () => {
         area: property.area || '',
         amenities: property.amenities || [],
         status: property.status || 'available',
+        featured: property.featured || false,
       });
       setExistingImages(property.images || []);
     }
@@ -110,8 +115,14 @@ const AdminPropertyForm = () => {
       if (images.length > 0) {
         setUploading(true);
         for (const image of images) {
-          const url = await storageAPI.uploadImage(image, 'properties');
-          imageUrls.push(url);
+          const result = await storageAPI.uploadImage(image, 'properties');
+          if (result.error) {
+            console.error('Image upload error:', result.error);
+            throw new Error(`Failed to upload ${image.name}: ${result.error.message}`);
+          }
+          if (result.data && result.data.url) {
+            imageUrls.push(result.data.url);
+          }
         }
         setUploading(false);
       }
@@ -132,7 +143,10 @@ const AdminPropertyForm = () => {
       }
     },
     onSuccess: () => {
+      // Invalidate all property-related queries
       queryClient.invalidateQueries(['adminProperties']);
+      queryClient.invalidateQueries(['properties']);
+      queryClient.invalidateQueries(['featured-properties']);
       navigate('/admin/properties');
     },
     onError: (err) => {
@@ -172,10 +186,11 @@ const AdminPropertyForm = () => {
       return;
     }
 
-    if (existingImages.length === 0 && images.length === 0) {
-      setError('Please add at least one image');
-      return;
-    }
+    // Temporarily allow properties without images (will use placeholder)
+    // if (existingImages.length === 0 && images.length === 0) {
+    //   setError('Please add at least one image');
+    //   return;
+    // }
 
     saveMutation.mutate(formData);
   };
@@ -265,16 +280,15 @@ const AdminPropertyForm = () => {
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth required>
-                <InputLabel>Location</InputLabel>
-                <Select name="location" value={formData.location} onChange={handleChange} label="Location">
-                  {LOCATIONS.map((loc) => (
-                    <MenuItem key={loc} value={loc}>
-                      {loc}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <TextField
+                fullWidth
+                label="Location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                placeholder="e.g., Downtown Dubai, Business Bay"
+              />
             </Grid>
 
             {/* Price and Area */}
@@ -287,6 +301,9 @@ const AdminPropertyForm = () => {
                 value={formData.price}
                 onChange={handleChange}
                 required
+                InputProps={{
+                  style: { color: '#F0F2F5' }
+                }}
               />
             </Grid>
 
@@ -299,6 +316,9 @@ const AdminPropertyForm = () => {
                 value={formData.area}
                 onChange={handleChange}
                 required
+                InputProps={{
+                  style: { color: '#F0F2F5' }
+                }}
               />
             </Grid>
 

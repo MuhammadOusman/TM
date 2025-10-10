@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Button, Grid, Card, Chip, IconButton } from '@mui/material';
+import { Box, Container, Typography, Button, Grid, Card, Chip, IconButton, CircularProgress } from '@mui/material';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import VillaIcon from '@mui/icons-material/Villa';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -14,6 +15,7 @@ import SEO from '../components/SEO';
 import { organizationSchema, websiteSchema } from '../seo/structuredData';
 import CountUp from 'react-countup';
 import LazyImage from '../components/LazyImage';
+import { propertiesAPI } from '../services/api';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, EffectFade } from 'swiper/modules';
 import 'swiper/css';
@@ -69,12 +71,16 @@ const Home = () => {
     },
   ];
 
-  const communities = [
-    { name: 'Downtown Dubai', properties: 32, image: 'https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?w=800&q=80' },
-    { name: 'Dubai Marina', properties: 28, image: 'https://images.unsplash.com/photo-1512632578888-169bbbc64f33?w=800&q=80' },
-    { name: 'Business Bay', properties: 24, image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80' },
-    { name: 'JVC', properties: 45, image: 'https://images.unsplash.com/photo-1567684014761-b65e2e59b9eb?w=800&q=80' },
-  ];
+  // Fetch featured properties
+  const { data: propertiesData, isLoading: propertiesLoading } = useQuery({
+    queryKey: ['featured-properties'],
+    queryFn: () => propertiesAPI.getAll(),
+  });
+
+  // Filter only featured properties and limit to 4
+  const featuredProperties = propertiesData?.data
+    ?.filter(property => property.featured === true)
+    ?.slice(0, 4) || [];
 
   return (
     <Box>
@@ -300,14 +306,22 @@ const Home = () => {
       {/* Stats Section */}
       <Box
         sx={{
-          py: 6,
+          py: 8,
           background: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',
+          width: '100%',
+          m: 0,
+          p: 0,
         }}
       >
-        <Container maxWidth="xl">
-          <Grid container spacing={4}>
+        <Box sx={{ py: 8, px: { xs: 3, sm: 4, md: 6, lg: 8, xl: 12 } }}>
+          <Grid 
+            container 
+            spacing={{ xs: 3, sm: 4, md: 6 }} 
+            justifyContent="space-evenly"
+            alignItems="center"
+          >
             {stats.map((stat, index) => (
-              <Grid item xs={6} md={3} key={index}>
+              <Grid item xs={6} sm={6} md={3} key={index}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -327,13 +341,13 @@ const Home = () => {
                         display: 'flex',
                         justifyContent: 'center',
                         '& svg': {
-                          fontSize: { xs: '2.5rem', md: '3rem' },
+                          fontSize: { xs: '2.5rem', md: '3.5rem' },
                         },
                       }}
                     >
                       {stat.icon}
                     </Box>
-                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#a58654', mb: 1, fontSize: { xs: '2rem', md: '3rem' } }}>
+                    <Typography variant="h3" sx={{ fontWeight: 800, color: '#a58654', mb: 1, fontSize: { xs: '2rem', md: '3.5rem' } }}>
                       <CountUp end={stat.end} duration={2} suffix={stat.suffix} decimals={stat.decimals || 0} />
                     </Typography>
                     <Typography
@@ -341,6 +355,7 @@ const Home = () => {
                       sx={{
                         color: 'rgba(255,255,255,0.7)',
                         fontWeight: 500,
+                        fontSize: { xs: '0.9rem', md: '1rem' },
                       }}
                     >
                       {stat.label}
@@ -350,7 +365,7 @@ const Home = () => {
               </Grid>
             ))}
           </Grid>
-        </Container>
+        </Box>
       </Box>
 
       {/* About Preview */}
@@ -612,7 +627,7 @@ const Home = () => {
               viewport={{ once: true }}
             >
               <Chip
-                label="Prime Locations"
+                label="Discover Excellence"
                 sx={{
                   bgcolor: 'rgba(165, 134, 84, 0.1)',
                   color: '#a58654',
@@ -629,127 +644,291 @@ const Home = () => {
                   fontSize: { xs: '2rem', md: '3rem' },
                 }}
               >
-                Featured Communities
+                Featured Properties
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'text.secondary',
+                  maxWidth: '600px',
+                  mx: 'auto',
+                }}
+              >
+                Explore our handpicked selection of premium properties
               </Typography>
             </motion.div>
           </Box>
 
-          <Grid container spacing={3}>
-            {communities.map((community, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <Card
-                    component={motion.div}
-                    whileHover={{ y: -8 }}
-                    sx={{
-                      position: 'relative',
-                      borderRadius: 4,
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': {
-                        boxShadow: '0 16px 48px rgba(212, 175, 55, 0.3)',
-                        '& img': {
-                          transform: 'scale(1.15)',
-                          filter: 'brightness(1.1)',
-                        },
-                        '& .overlay': {
-                          background: 'linear-gradient(to top, rgba(212, 175, 55, 0.8) 0%, transparent 100%)',
-                        },
-                        '& .property-count': {
-                          transform: 'translateY(-4px)',
-                          color: '#fff',
-                        },
-                      },
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        height: 320,
-                        overflow: 'hidden',
-                      }}
+          {propertiesLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress sx={{ color: '#D4AF37' }} />
+            </Box>
+          ) : featuredProperties.length > 0 ? (
+            <Box
+              sx={{
+                '& .swiper': {
+                  pb: 6,
+                },
+                '& .swiper-pagination-bullet': {
+                  bgcolor: 'rgba(212, 175, 55, 0.3)',
+                  width: 12,
+                  height: 12,
+                },
+                '& .swiper-pagination-bullet-active': {
+                  bgcolor: '#D4AF37',
+                  width: 32,
+                  borderRadius: 6,
+                },
+              }}
+            >
+              <Swiper
+                modules={[Autoplay, Pagination]}
+                spaceBetween={32}
+                slidesPerView={1}
+                pagination={{ clickable: true }}
+                autoplay={{ 
+                  delay: 3500, 
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true 
+                }}
+                loop={featuredProperties.length > 1}
+                speed={800}
+                breakpoints={{
+                  640: { slidesPerView: 1.5, spaceBetween: 24 },
+                  900: { slidesPerView: 2, spaceBetween: 28 },
+                  1200: { slidesPerView: 2.5, spaceBetween: 32 },
+                }}
+              >
+                {featuredProperties.map((property, index) => (
+                  <SwiperSlide key={property.id}>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true }}
                     >
-                      <img
-                        src={community.image}
-                        alt={community.name}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-                        }}
-                      />
-                      <Box
-                        className="overlay"
+                      <Card
+                        component={Link}
+                        to={`/properties/${property.id}`}
                         sx={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          background: 'linear-gradient(to top, rgba(26, 32, 39, 0.9) 0%, transparent 100%)',
-                          p: 3,
-                          transition: 'background 0.4s ease',
+                          textDecoration: 'none',
+                          position: 'relative',
+                          borderRadius: 5,
+                          overflow: 'hidden',
+                          cursor: 'pointer',
+                          background: 'linear-gradient(145deg, #273444 0%, #1e2936 100%)',
+                          boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(212, 175, 55, 0.1)',
+                          transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            borderRadius: 5,
+                            padding: '2px',
+                            background: 'linear-gradient(145deg, rgba(212, 175, 55, 0.3), transparent, rgba(212, 175, 55, 0.1))',
+                            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                            WebkitMaskComposite: 'xor',
+                            maskComposite: 'exclude',
+                            opacity: 0,
+                            transition: 'opacity 0.6s ease',
+                          },
+                          '&:hover': {
+                            transform: 'translateY(-20px) scale(1.04) rotateY(2deg)',
+                            boxShadow: '0 35px 90px rgba(212, 175, 55, 0.4), 0 0 60px rgba(212, 175, 55, 0.3), 0 0 0 3px rgba(212, 175, 55, 0.7)',
+                            '&::before': {
+                              opacity: 1,
+                            },
+                            '& img': {
+                              transform: 'scale(1.18) rotate(2deg)',
+                              filter: 'brightness(1.25) contrast(1.15) saturate(1.1)',
+                            },
+                            '& .overlay': {
+                              background: 'linear-gradient(to top, rgba(26, 32, 39, 0.98) 0%, rgba(26, 32, 39, 0.75) 35%, transparent 100%)',
+                              backdropFilter: 'blur(20px) saturate(150%)',
+                              borderTop: '1px solid rgba(212, 175, 55, 0.2)',
+                            },
+                            '& .price-tag': {
+                              transform: 'scale(1.08) translateY(-3px)',
+                              background: 'rgba(212, 175, 55, 0.25)',
+                              backdropFilter: 'blur(25px) saturate(200%)',
+                              border: '2px solid rgba(212, 175, 55, 0.8)',
+                              boxShadow: '0 6px 25px rgba(212, 175, 55, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                            },
+                            '& .status-badge': {
+                              transform: 'translateY(-6px) scale(1.1) rotate(-2deg)',
+                              boxShadow: '0 10px 30px rgba(212, 175, 55, 0.6)',
+                            },
+                            '& .location-indicator': {
+                              animation: 'pulse 1.5s ease-in-out infinite',
+                            },
+                          },
+                          '@keyframes pulse': {
+                            '0%, 100%': {
+                              transform: 'scale(1)',
+                              opacity: 1,
+                            },
+                            '50%': {
+                              transform: 'scale(1.3)',
+                              opacity: 0.7,
+                            },
+                          },
                         }}
                       >
-                        <Typography
-                          variant="h5"
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          height: 420,
+                          overflow: 'hidden',
+                          borderRadius: 5,
+                        }}
+                      >
+                        <LazyImage
+                          src={property.image_url || property.images?.[0] || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80'}
+                          alt={property.title}
+                          aspectRatio="4/3"
+                          style={{ 
+                            borderRadius: '20px',
+                            transition: 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                          }}
+                        />
+                        <Box
+                          className="overlay"
                           sx={{
-                            color: 'white',
-                            fontWeight: 700,
-                            mb: 1,
-                            textShadow: '2px 2px 8px rgba(0,0,0,0.3)',
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            background: 'linear-gradient(to top, rgba(26, 32, 39, 0.95) 0%, rgba(26, 32, 39, 0.6) 40%, transparent 100%)',
+                            backdropFilter: 'blur(16px) saturate(120%)',
+                            WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+                            p: 4,
+                            transition: 'all 0.6s ease',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
                           }}
                         >
-                          {community.name}
-                        </Typography>
-                        <Typography
-                          className="property-count"
-                          variant="body2"
-                          sx={{
-                            color: '#D4AF37',
-                            fontWeight: 600,
-                            display: 'inline-block',
-                            transition: 'all 0.3s ease',
-                          }}
-                        >
-                          {community.properties} Properties Available
-                        </Typography>
-                      </Box>
+                          <Typography
+                            variant="h5"
+                            sx={{
+                              color: 'white',
+                              fontWeight: 700,
+                              mb: 1.5,
+                              textShadow: '0 2px 12px rgba(0,0,0,0.7)',
+                              fontSize: { xs: '1.35rem', md: '1.6rem' },
+                              letterSpacing: '-0.3px',
+                              lineHeight: 1.3,
+                              fontFamily: '"Poppins", "Roboto", sans-serif',
+                            }}
+                          >
+                            {property.title}
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                              mb: 2.5,
+                            }}
+                          >
+                            <Box
+                              className="location-indicator"
+                              sx={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                bgcolor: '#D4AF37',
+                                boxShadow: '0 0 12px rgba(212, 175, 55, 0.8)',
+                                transition: 'all 0.3s ease',
+                              }}
+                            />
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: 'rgba(255,255,255,0.85)',
+                                fontWeight: 500,
+                                fontSize: '0.95rem',
+                                textShadow: '0 1px 6px rgba(0,0,0,0.5)',
+                                fontFamily: '"Poppins", "Roboto", sans-serif',
+                              }}
+                            >
+                              {property.location}
+                            </Typography>
+                          </Box>
+                          <Box
+                            className="price-tag"
+                            sx={{
+                              display: 'inline-block',
+                              background: 'rgba(26, 32, 39, 0.65)',
+                              backdropFilter: 'blur(20px) saturate(180%)',
+                              WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                              border: '1.5px solid rgba(212, 175, 55, 0.4)',
+                              borderRadius: 2,
+                              px: 3,
+                              py: 1.2,
+                              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            }}
+                          >
+                            <Typography
+                              variant="h5"
+                              sx={{
+                                color: '#D4AF37',
+                                fontWeight: 700,
+                                fontSize: { xs: '1.4rem', md: '1.7rem' },
+                                textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
+                                letterSpacing: '0.5px',
+                                fontFamily: '"Poppins", "Roboto", sans-serif',
+                              }}
+                            >
+                              AED {property.price?.toLocaleString()}
+                            </Typography>
+                          </Box>
+                        </Box>
 
-                      {/* Decorative corner accent */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 16,
-                          right: 16,
-                          width: 40,
-                          height: 40,
-                          borderRadius: '50%',
-                          bgcolor: 'rgba(212, 175, 55, 0.9)',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#1A2027',
-                          fontWeight: 700,
-                          fontSize: '0.9rem',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                        }}
-                      >
-                        {community.properties}
+                        {/* Status badge */}
+                        {property.status && (
+                          <Chip
+                            label={property.status}
+                            className="status-badge"
+                            size="medium"
+                            sx={{
+                              position: 'absolute',
+                              top: 20,
+                              right: 20,
+                              background: property.status === 'available' 
+                                ? 'linear-gradient(135deg, #66BB6A 0%, #43A047 100%)'
+                                : 'linear-gradient(135deg, #D4AF37 0%, #B8941F 100%)',
+                              color: 'white',
+                              fontWeight: 700,
+                              fontSize: '0.9rem',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+                              backdropFilter: 'blur(10px)',
+                              border: '2px solid rgba(255, 255, 255, 0.3)',
+                              borderRadius: 25,
+                              px: 2,
+                              py: 2.5,
+                              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            }}
+                          />
+                        )}
                       </Box>
-                    </Box>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
+                    </Card>
+                  </motion.div>
+                </SwiperSlide>
+              ))}
+              </Swiper>
+            </Box>
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+              <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+                No featured properties available at the moment.
+              </Typography>
+            </Box>
+          )}
         </Container>
       </Box>
 
