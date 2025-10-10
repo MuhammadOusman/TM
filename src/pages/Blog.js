@@ -10,7 +10,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SEO from '../components/SEO';
 import HeroBanner from '../components/HeroBanner';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { BlogPageSkeleton } from '../components/LoadingSkeleton';
 import { breadcrumbSchema } from '../seo/structuredData';
 import { blogAPI } from '../services/api';
@@ -19,7 +18,7 @@ const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch blog posts with React Query
-  const { data: fetchedPosts, isLoading, error } = useQuery({
+  const { data: fetchedPosts, isLoading } = useQuery({
     queryKey: ['blog-posts'],
     queryFn: blogAPI.getAll,
     staleTime: 5 * 60 * 1000, // 5 minutes

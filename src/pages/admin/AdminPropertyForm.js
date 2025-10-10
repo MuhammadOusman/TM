@@ -16,7 +16,6 @@ import {
   IconButton,
   CircularProgress,
   Alert,
-  Switch,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -39,18 +38,6 @@ const AMENITIES = [
   'Pet Friendly',
   'Furnished',
   'Garden',
-];
-
-const LOCATIONS = [
-  'Dubai Marina',
-  'Downtown Dubai',
-  'Palm Jumeirah',
-  'Business Bay',
-  'JBR',
-  'Dubai Hills',
-  'Arabian Ranches',
-  'JVC',
-  'JLT',
 ];
 
 const AdminPropertyForm = () => {

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Container, Typography, Button, Grid, Card, Chip, IconButton, CircularProgress } from '@mui/material';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';

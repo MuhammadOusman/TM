@@ -97,10 +97,12 @@ export const PropertyDetailSkeleton = () => (
   </Container>
 );
 
-export default {
+const LoadingSkeleton = {
   PropertyCardSkeleton,
   BlogCardSkeleton,
   PropertiesPageSkeleton,
   BlogPageSkeleton,
   PropertyDetailSkeleton,
 };
+
+export default LoadingSkeleton;

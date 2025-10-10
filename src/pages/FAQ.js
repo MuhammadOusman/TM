@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Accordion, AccordionSummary, AccordionDetails, Chip, Button, Card } from '@mui/material';
+import { Box, Container, Typography, Accordion, AccordionSummary, AccordionDetails, Button, Card } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import HomeIcon from '@mui/icons-material/Home';
 import PaymentIcon from '@mui/icons-material/Payment';
 import PolicyIcon from '@mui/icons-material/Policy';

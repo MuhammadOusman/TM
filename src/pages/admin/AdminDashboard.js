@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -14,7 +14,6 @@ import {
   TableHead,
   TableRow,
   Chip,
-  IconButton,
   CircularProgress,
   Button,
 } from '@mui/material';
@@ -28,18 +27,15 @@ import ArticleIcon from '@mui/icons-material/Article';
 import MailIcon from '@mui/icons-material/Mail';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import LogoutIcon from '@mui/icons-material/Logout';
 import { analyticsAPI } from '../../services/api';
-import { useAuth } from '../../contexts/AuthContext';
 import AdminLayout from '../../components/AdminLayout';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
-  const [dateRange, setDateRange] = useState(30); // Last 30 days
+  const [dateRange] = useState(30); // Last 30 days
 
   // Fetch dashboard stats
-  const { data: statsData, isLoading: statsLoading } = useQuery({
+  const { data: statsData } = useQuery({
     queryKey: ['dashboardStats'],
     queryFn: analyticsAPI.getDashboardStats,
   });
@@ -71,11 +67,6 @@ const AdminDashboard = () => {
     queryFn: analyticsAPI.getTopBlogPosts,
   });
   const topBlogPosts = topBlogPostsData?.data || [];
-
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/admin/login');
-  };
 
   const statCards = [
     {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Fade } from '@mui/material';
+import { Box } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import logo from '../assets/logo.png';
 

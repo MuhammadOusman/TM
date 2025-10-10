@@ -28,7 +28,6 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import SearchIcon from '@mui/icons-material/Search';
 import SEO from '../components/SEO';
 import HeroBanner from '../components/HeroBanner';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { PropertiesPageSkeleton } from '../components/LoadingSkeleton';
 import { breadcrumbSchema } from '../seo/structuredData';
 import { propertiesAPI } from '../services/api';
@@ -40,14 +39,14 @@ const Properties = () => {
   const [priceRange, setPriceRange] = useState('all');
 
   // Fetch properties with React Query
-  const { data: fetchedProperties, isLoading, error } = useQuery({
+  const { data: fetchedProperties, isLoading } = useQuery({
     queryKey: ['properties'],
     queryFn: propertiesAPI.getAll,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Fallback mock data for development
-  const mockProperties = [
+  // Use database data as primary source
+  const properties = fetchedProperties?.data || [
     {
       id: 1,
       title: 'Luxury Penthouse in Downtown Dubai',
@@ -166,9 +165,6 @@ const Properties = () => {
       amenities: ['Private Pool', 'Garden', 'Golf Course View'],
     },
   ];
-
-  // Use database data as primary source
-  const properties = fetchedProperties?.data || [];
 
   // Filter properties based on search and filters
   const filteredProperties = properties.filter((property) => {

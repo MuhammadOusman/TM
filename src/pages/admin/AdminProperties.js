@@ -32,7 +32,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { propertiesAPI } from '../../services/api';
 import { motion } from 'framer-motion';
 import AdminLayout from '../../components/AdminLayout';

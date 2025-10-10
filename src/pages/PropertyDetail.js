@@ -16,7 +16,6 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { PropertyDetailSkeleton } from '../components/LoadingSkeleton';
 import { propertiesAPI } from '../services/api';
 

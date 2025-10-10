@@ -31,7 +31,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { inquiriesAPI } from '../../services/api';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import AdminLayout from '../../components/AdminLayout';
 
 const AdminInquiries = () => {
   const navigate = useNavigate();

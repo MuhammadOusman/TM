@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -27,7 +27,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { agentsAPI } from '../../services/api';
 import { motion } from 'framer-motion';
-import AdminLayout from '../../components/AdminLayout';
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 
 const AdminAgents = () => {
