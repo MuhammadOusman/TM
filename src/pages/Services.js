@@ -16,6 +16,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SEO from '../components/SEO';
 import HeroBanner from '../components/HeroBanner';
+import { BackgroundBeams } from '../components/BackgroundBoxes';
 
 const Services = () => {
   // Primary services with detailed feature sets
@@ -87,7 +88,7 @@ const Services = () => {
     {
       title: 'Building / Multi-Unit Programs',
       icon: <HomeWorkIcon />,
-      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118f?w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
       color: '#5e4d35',
       description:
         'Performance-focused management for entire buildings & multi-unit portfolios with unified branding and yield maximization.',
@@ -179,7 +180,7 @@ const Services = () => {
       />
 
       {/* Main Services */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="xl">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div
@@ -232,24 +233,29 @@ const Services = () => {
                       },
                     }}
                   >
-                    <Grid container>
-                      <Grid item xs={12} md={5}>
+                    <Grid container sx={{ flexWrap: { xs: 'wrap', sm: 'nowrap' }, alignItems: 'stretch' }}>
+                      <Grid item xs={12} sm={5} md={5}>
                         <Box
                           sx={{
                             height: '100%',
-                            minHeight: 400,
-                            backgroundImage: `url(${service.image})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
+                            minHeight: { xs: 260, md: 400 },
                             position: 'relative',
+                            overflow: 'hidden',
                             '&::before': {
                               content: '""',
                               position: 'absolute',
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              bottom: 0,
-                              background: `linear-gradient(135deg, ${service.color}dd 0%, ${service.color}99 100%)`,
+                              inset: 0,
+                              backgroundImage: `url(${service.image})`,
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              filter: 'blur(4px)',
+                              transform: 'scale(1.05)',
+                            },
+                            '&::after': {
+                              content: '""',
+                              position: 'absolute',
+                              inset: 0,
+                              background: `linear-gradient(135deg, ${service.color}88 0%, ${service.color}44 100%)`,
                             },
                           }}
                         >
@@ -261,9 +267,10 @@ const Services = () => {
                               alignItems: 'center',
                               justifyContent: 'center',
                               color: 'white',
+                              zIndex: 1,
                             }}
                           >
-                            <Box sx={{ textAlign: 'center', p: 4 }}>
+                            <Box sx={{ textAlign: 'center', p: { xs: 3, md: 4 } }}>
                               <Box
                                 sx={{
                                   '& svg': {
@@ -287,8 +294,8 @@ const Services = () => {
                         </Box>
                       </Grid>
 
-                      <Grid item xs={12} md={7}>
-                        <CardContent sx={{ p: 5 }}>
+                      <Grid item xs={12} sm={7} md={7} sx={{ display: 'flex' }}>
+                        <CardContent sx={{ p: 5, width: '100%' }}>
                           <Typography
                             variant="h5"
                             sx={{
@@ -321,24 +328,34 @@ const Services = () => {
                             Key Features:
                           </Typography>
 
-                          <Grid container spacing={2}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                             {service.features.map((feature, idx) => (
-                              <Grid item xs={12} sm={6} key={idx}>
-                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                  <CheckCircleIcon sx={{ color: service.color, fontSize: '1.2rem' }} />
-                                  <Typography
-                                    variant="body2"
-                                    sx={{
-                                      color: 'text.secondary',
-                                      fontWeight: 500,
-                                    }}
-                                  >
-                                    {feature}
-                                  </Typography>
-                                </Box>
-                              </Grid>
+                              <Box 
+                                key={idx}
+                                sx={{ 
+                                  display: 'flex', 
+                                  alignItems: 'flex-start', 
+                                  gap: 1.5,
+                                  transition: 'all 0.3s ease',
+                                  '&:hover': {
+                                    transform: 'translateX(8px)',
+                                  }
+                                }}
+                              >
+                                <CheckCircleIcon sx={{ color: service.color, fontSize: '1.3rem', flexShrink: 0, mt: 0.2 }} />
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: 'text.secondary',
+                                    fontWeight: 500,
+                                    lineHeight: 1.6,
+                                  }}
+                                >
+                                  {feature}
+                                </Typography>
+                              </Box>
                             ))}
-                          </Grid>
+                          </Box>
                         </CardContent>
                       </Grid>
                     </Grid>
@@ -382,10 +399,21 @@ const Services = () => {
             </motion.div>
           </Box>
 
-          <Grid container spacing={4}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: '1fr 1fr',
+                md: 'repeat(3, 1fr)'
+              },
+              gap: 4,
+            }}
+          >
             {additionalServices.map((service, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Box key={index} sx={{ display: 'flex' }}>
                 <motion.div
+                  style={{ width: '100%' }}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -446,14 +474,14 @@ const Services = () => {
                     </Typography>
                   </Card>
                 </motion.div>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
       {/* Process Timeline */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div

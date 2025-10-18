@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -36,17 +36,30 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [propertyType, setPropertyType] = useState('all');
   const [location, setLocation] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [appliedFilters, setAppliedFilters] = useState({
+    searchTerm: '',
+    propertyType: 'all',
+    location: 'all',
+    minPrice: '',
+    maxPrice: '',
+  });
 
   // Fetch properties with React Query
-  const { data: fetchedProperties, isLoading } = useQuery({
+  const { data: fetchedProperties, isLoading, error: queryError } = useQuery({
     queryKey: ['properties'],
-    queryFn: propertiesAPI.getAll,
+    queryFn: async () => {
+      console.log('Fetching properties from API...');
+      const result = await propertiesAPI.getAll();
+      console.log('API Response:', result);
+      return result;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Use database data as primary source
-  const properties = fetchedProperties?.data || [
+  const properties = (fetchedProperties?.data && fetchedProperties.data.length > 0) ? fetchedProperties.data : [
     {
       id: 1,
       title: 'Luxury Penthouse in Downtown Dubai',
@@ -169,44 +182,32 @@ const Properties = () => {
   // Filter properties based on search and filters
   const filteredProperties = properties.filter((property) => {
     // Search term filter (search in title and location)
-    const searchLower = searchTerm.toLowerCase();
-    const matchesSearch = !searchTerm || 
+    const searchLower = appliedFilters.searchTerm.toLowerCase();
+    const matchesSearch = !appliedFilters.searchTerm || 
       property.title?.toLowerCase().includes(searchLower) || 
       property.location?.toLowerCase().includes(searchLower);
 
     // Property type filter
-    const matchesType = propertyType === 'all' || property.type === propertyType;
+    const matchesType = appliedFilters.propertyType === 'all' || property.type === appliedFilters.propertyType;
 
     // Location filter
-    const matchesLocation = location === 'all' || property.location === location;
+    const matchesLocation = appliedFilters.location === 'all' || property.location === appliedFilters.location;
 
     // Price range filter
     let matchesPrice = true;
-    if (priceRange !== 'all') {
+    if (appliedFilters.minPrice || appliedFilters.maxPrice) {
       const price = parseFloat(property.price);
-      switch (priceRange) {
-        case '0-500':
-          matchesPrice = price <= 500;
-          break;
-        case '500-1000':
-          matchesPrice = price > 500 && price <= 1000;
-          break;
-        case '1000-2000':
-          matchesPrice = price > 1000 && price <= 2000;
-          break;
-        case '2000+':
-          matchesPrice = price > 2000;
-          break;
-        default:
-          matchesPrice = true;
-      }
+      const min = appliedFilters.minPrice ? parseFloat(appliedFilters.minPrice) : 0;
+      const max = appliedFilters.maxPrice ? parseFloat(appliedFilters.maxPrice) : Infinity;
+      matchesPrice = price >= min && price <= max;
     }
 
     return matchesSearch && matchesType && matchesLocation && matchesPrice;
   });
 
-  const locations = ['all', 'Downtown Dubai', 'Dubai Marina', 'Business Bay', 'JVC', 'Palm Jumeirah', 'City Walk', 'DIFC', 'Arabian Ranches'];
-  const propertyTypes = ['all', 'Apartment', 'Villa', 'Townhouse'];
+  // Extract unique locations and types from actual properties
+  const uniqueLocations = ['all', ...new Set(properties.map(p => p.location).filter(Boolean))];
+  const uniquePropertyTypes = ['all', ...new Set(properties.map(p => p.type).filter(Boolean))];
 
   // Show loading skeleton
   if (isLoading) {
@@ -227,6 +228,12 @@ const Properties = () => {
       </Box>
     );
   }
+
+  console.log('Query Error:', queryError);
+  console.log('fetchedProperties:', fetchedProperties);
+  console.log('properties:', properties);
+  console.log('filteredProperties:', filteredProperties);
+  console.log('appliedFilters:', appliedFilters);
 
   return (
     <Box>
@@ -249,18 +256,18 @@ const Properties = () => {
       {/* Search & Filter Section */}
       <Box
         sx={{
-          py: 4,
-          bgcolor: 'white',
-          borderBottom: '1px solid rgba(0,0,0,0.1)',
+          py: 3,
+          bgcolor: '#1A2027',
+          borderBottom: '1px solid rgba(165, 134, 84, 0.2)',
           position: 'sticky',
           top: 64,
           zIndex: 100,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
         }}
       >
         <Container maxWidth="xl">
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={2}>
               <TextField
                 fullWidth
                 placeholder="Search properties..."
@@ -275,6 +282,12 @@ const Properties = () => {
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
+                    bgcolor: appliedFilters.searchTerm ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    '& fieldset': {
+                      borderColor: appliedFilters.searchTerm ? '#D4AF37' : 'rgba(165, 134, 84, 0.3)',
+                      borderWidth: appliedFilters.searchTerm ? 2 : 1,
+                    },
                     '&:hover fieldset': {
                       borderColor: '#a58654',
                     },
@@ -282,23 +295,72 @@ const Properties = () => {
                       borderColor: '#a58654',
                     },
                   },
+                  '& .MuiInputBase-input::placeholder': {
+                    color: 'rgba(255, 255, 255, 0.5)',
+                  },
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={4} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Property Type</InputLabel>
+            <Grid item xs={12} sm={4} md={4}>
+              <FormControl fullWidth sx={{ minWidth: 180, mr: 2 }}>
+                <InputLabel shrink sx={{ color: 'white', '&.Mui-focused': { color: '#a58654' } }} htmlFor="property-type-select">
+                  Property Type
+                </InputLabel>
                 <Select
-                  value={propertyType}
+                  id="property-type-select"
+                  value={appliedFilters.propertyType}
                   label="Property Type"
                   onChange={(e) => setPropertyType(e.target.value)}
+                  labelId="property-type-label"
+                  fullWidth
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Property Type' }}
                   sx={{
+                    minHeight: 56,
+                    bgcolor: appliedFilters.propertyType !== 'all' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: appliedFilters.propertyType !== 'all' ? '#D4AF37' : 'rgba(165, 134, 84, 0.3)',
+                      borderWidth: appliedFilters.propertyType !== 'all' ? 2 : 1,
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#a58654',
+                    },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#a58654',
                     },
+                    '& .MuiSvgIcon-root': {
+                      color: '#a58654',
+                    },
+                    '& .MuiSelect-select': {
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: 32,
+                      pt: 2,
+                    },
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        bgcolor: '#2c3e50',
+                        minWidth: 220,
+                        '& .MuiMenuItem-root': {
+                          color: 'white',
+                          '&:hover': {
+                            bgcolor: 'rgba(165, 134, 84, 0.1)',
+                          },
+                          '&.Mui-selected': {
+                            bgcolor: 'rgba(165, 134, 84, 0.2)',
+                            '&:hover': {
+                              bgcolor: 'rgba(165, 134, 84, 0.3)',
+                            },
+                          },
+                        },
+                      },
+                    },
                   }}
                 >
-                  {propertyTypes.map((type) => (
+                  {uniquePropertyTypes.map((type) => (
                     <MenuItem key={type} value={type}>
                       {type.charAt(0).toUpperCase() + type.slice(1)}
                     </MenuItem>
@@ -306,20 +368,66 @@ const Properties = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Location</InputLabel>
+            <Grid item xs={12} sm={4} md={4}>
+              <FormControl fullWidth sx={{ minWidth: 180, mr: 2 }}>
+                <InputLabel shrink sx={{ color: 'white', '&.Mui-focused': { color: '#a58654' } }} htmlFor="location-select">
+                  Location
+                </InputLabel>
                 <Select
-                  value={location}
+                  id="location-select"
+                  value={appliedFilters.location}
                   label="Location"
                   onChange={(e) => setLocation(e.target.value)}
+                  labelId="location-label"
+                  fullWidth
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Location' }}
                   sx={{
+                    minHeight: 56,
+                    bgcolor: appliedFilters.location !== 'all' ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: appliedFilters.location !== 'all' ? '#D4AF37' : 'rgba(165, 134, 84, 0.3)',
+                      borderWidth: appliedFilters.location !== 'all' ? 2 : 1,
+                    },
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#a58654',
+                    },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#a58654',
                     },
+                    '& .MuiSvgIcon-root': {
+                      color: '#a58654',
+                    },
+                    '& .MuiSelect-select': {
+                      display: 'flex',
+                      alignItems: 'center',
+                      minHeight: 32,
+                      pt: 2,
+                    },
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        bgcolor: '#2c3e50',
+                        minWidth: 220,
+                        '& .MuiMenuItem-root': {
+                          color: 'white',
+                          '&:hover': {
+                            bgcolor: 'rgba(165, 134, 84, 0.1)',
+                          },
+                          '&.Mui-selected': {
+                            bgcolor: 'rgba(165, 134, 84, 0.2)',
+                            '&:hover': {
+                              bgcolor: 'rgba(165, 134, 84, 0.3)',
+                            },
+                          },
+                        },
+                      },
+                    },
                   }}
                 >
-                  {locations.map((loc) => (
+                  {uniqueLocations.map((loc) => (
                     <MenuItem key={loc} value={loc}>
                       {loc.charAt(0).toUpperCase() + loc.slice(1)}
                     </MenuItem>
@@ -327,26 +435,92 @@ const Properties = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Price Range</InputLabel>
-                <Select
-                  value={priceRange}
-                  label="Price Range"
-                  onChange={(e) => setPriceRange(e.target.value)}
+            <Grid item xs={12} sm={4} md={2}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Min Price"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  type="number"
                   sx={{
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#a58654',
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: appliedFilters.minPrice ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                      color: 'white',
+                      '& fieldset': {
+                        borderColor: appliedFilters.minPrice ? '#D4AF37' : 'rgba(165, 134, 84, 0.3)',
+                        borderWidth: appliedFilters.minPrice ? 2 : 1,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#a58654',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#a58654',
+                      },
+                    },
+                    '& .MuiInputBase-input::placeholder': {
+                      color: 'rgba(255, 255, 255, 0.5)',
                     },
                   }}
+                />
+                <TextField
+                  fullWidth
+                  placeholder="Max Price"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  type="number"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: appliedFilters.maxPrice ? 'rgba(212, 175, 55, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                      color: 'white',
+                      '& fieldset': {
+                        borderColor: appliedFilters.maxPrice ? '#D4AF37' : 'rgba(165, 134, 84, 0.3)',
+                        borderWidth: appliedFilters.maxPrice ? 2 : 1,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#a58654',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#a58654',
+                      },
+                    },
+                    '& .MuiInputBase-input::placeholder': {
+                      color: 'rgba(255, 255, 255, 0.5)',
+                    },
+                  }}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                <Button
+                  variant="contained"
+                  onClick={() => setAppliedFilters({
+                    searchTerm,
+                    propertyType,
+                    location,
+                    minPrice,
+                    maxPrice,
+                  })}
+                  sx={{
+                    bgcolor: '#D4AF37',
+                    color: '#1A2027',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: 2,
+                    boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
+                    '&:hover': {
+                      bgcolor: '#E0C66F',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 16px rgba(212, 175, 55, 0.4)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
                 >
-                  <MenuItem value="all">All Prices</MenuItem>
-                  <MenuItem value="0-1000">$0 - $1000</MenuItem>
-                  <MenuItem value="1000-2000">$1000 - $2000</MenuItem>
-                  <MenuItem value="2000-3000">$2000 - $3000</MenuItem>
-                  <MenuItem value="3000+">$3000+</MenuItem>
-                </Select>
-              </FormControl>
+                  Apply Filters
+                </Button>
+              </Box>
             </Grid>
           </Grid>
         </Container>

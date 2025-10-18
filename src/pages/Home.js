@@ -14,6 +14,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SEO from '../components/SEO';
 import { organizationSchema, websiteSchema } from '../seo/structuredData';
 import CountUp from 'react-countup';
+import { BackgroundBeams } from '../components/BackgroundBoxes';
 import LazyImage from '../components/LazyImage';
 import { propertiesAPI } from '../services/api';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -491,7 +492,7 @@ const Home = () => {
       </Box>
 
       {/* Features Section */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="xl">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div
@@ -533,37 +534,65 @@ const Home = () => {
             </motion.div>
           </Box>
 
-          <Grid container spacing={4}>
+          <Grid container spacing={4} sx={{ px: { xs: 2, sm: 0 } }}>
             {features.map((feature, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
+                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ 
+                    duration: 0.7, 
+                    delay: index * 0.15,
+                    ease: [0.43, 0.13, 0.23, 0.96]
+                  }}
+                  viewport={{ once: true, margin: "-50px" }}
                 >
                   <Card
                     component={motion.div}
-                    whileHover={{ scale: 1.03 }}
+                    whileHover={{ 
+                      y: -16,
+                      transition: { duration: 0.3, ease: "easeOut" }
+                    }}
                     sx={{
                       height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
                       textAlign: 'center',
-                      p: 4,
-                      borderRadius: 4,
+                      p: { xs: 3, md: 4 },
+                      borderRadius: 5,
                       border: '1px solid',
-                      borderColor: 'rgba(212, 175, 55, 0.2)',
-                      background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(250,250,250,1) 100%)',
-                      boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                      borderColor: 'rgba(212, 175, 55, 0.15)',
+                      background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(252,252,252,1) 100%)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
                       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                       cursor: 'pointer',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '4px',
+                        background: 'linear-gradient(90deg, #D4AF37 0%, #E0C66F 100%)',
+                        transform: 'scaleX(0)',
+                        transformOrigin: 'left',
+                        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      },
                       '&:hover': {
-                        transform: 'translateY(-12px)',
-                        boxShadow: '0 16px 48px rgba(212, 175, 55, 0.25)',
-                        borderColor: '#D4AF37',
-                        background: 'linear-gradient(135deg, #ffffff 0%, rgba(212, 175, 55, 0.05) 100%)',
+                        boxShadow: '0 20px 60px rgba(212, 175, 55, 0.2), 0 0 0 1px rgba(212, 175, 55, 0.3)',
+                        borderColor: 'rgba(212, 175, 55, 0.4)',
+                        background: 'linear-gradient(135deg, #ffffff 0%, rgba(212, 175, 55, 0.03) 100%)',
+                        '&::before': {
+                          transform: 'scaleX(1)',
+                        },
                         '& .icon-wrapper': {
-                          transform: 'rotate(10deg) scale(1.1)',
-                          boxShadow: '0 8px 24px rgba(212, 175, 55, 0.4)',
+                          transform: 'scale(1.15) rotate(5deg)',
+                          boxShadow: '0 12px 32px rgba(212, 175, 55, 0.5)',
+                        },
+                        '& .feature-title': {
+                          color: '#B18F2A',
                         },
                       },
                     }}
@@ -571,30 +600,48 @@ const Home = () => {
                     <Box
                       className="icon-wrapper"
                       sx={{
-                        width: 90,
-                        height: 90,
+                        width: { xs: 80, md: 90 },
+                        height: { xs: 80, md: 90 },
                         borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #D4AF37 0%, #E0C66F 100%)',
+                        background: 'linear-gradient(135deg, #D4AF37 0%, #E0C66F 50%, #D4AF37 100%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         margin: '0 auto 24px',
                         color: '#1A2027',
-                        boxShadow: '0 6px 20px rgba(212, 175, 55, 0.3)',
-                        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: '0 8px 24px rgba(212, 175, 55, 0.35)',
+                        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        position: 'relative',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: -3,
+                          borderRadius: '50%',
+                          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(224, 198, 111, 0.1))',
+                          zIndex: -1,
+                          opacity: 0,
+                          transition: 'opacity 0.3s',
+                        },
+                        '&:hover::after': {
+                          opacity: 1,
+                        },
                         '& svg': {
-                          fontSize: '2.8rem',
+                          fontSize: { xs: '2.5rem', md: '2.8rem' },
+                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                         },
                       }}
                     >
                       {feature.icon}
                     </Box>
                     <Typography
+                      className="feature-title"
                       variant="h6"
                       sx={{
                         fontWeight: 700,
                         color: 'primary.main',
                         mb: 2,
+                        fontSize: { xs: '1.1rem', md: '1.25rem' },
+                        transition: 'color 0.3s',
                       }}
                     >
                       {feature.title}
@@ -603,7 +650,8 @@ const Home = () => {
                       variant="body2"
                       sx={{
                         color: 'text.secondary',
-                        lineHeight: 1.7,
+                        lineHeight: 1.8,
+                        fontSize: { xs: '0.9rem', md: '0.95rem' },
                       }}
                     >
                       {feature.description}

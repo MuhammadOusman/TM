@@ -10,6 +10,8 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import SEO from '../components/SEO';
 import LazyImage from '../components/LazyImage';
+import storyImg from '../assets/image.png';
+import founder1 from '../assets/founder1.jpg';
 import HeroBanner from '../components/HeroBanner';
 import { organizationSchema, breadcrumbSchema } from '../seo/structuredData';
 
@@ -20,7 +22,7 @@ const About = () => {
       role: 'Founder & Director',
       experience: '4.5+ Years',
       portfolio: '150+ Units',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+      image: founder1,
       bio: 'With over 4.5 years of experience in Dubai\'s real-estate market, Talha started from zero and became a recognized expert in sales, off-plan investments, and residential portfolio management.',
       expertise: 'He personally oversees a portfolio of more than 150 units, helping clients secure top-performing properties with consistent ROI. His strategic mindset and leadership are the driving forces behind Dar Al Barakah\'s rapid growth and client success.',
       specialties: ['Sales Expert', 'Off-Plan Investments', 'Portfolio Management', 'Strategic Leadership'],
@@ -30,12 +32,13 @@ const About = () => {
       role: 'Co-Founder & Director',
       experience: '4 Years',
       portfolio: '24 Buildings, 32 Villas, 29 Labor Camps',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
+      image: founder1,
       bio: 'A real-estate professional with four years of extensive field experience, Hamza specializes in building sales, residential & commercial leasing, and institutional investments.',
       expertise: 'He currently manages 24 buildings, 32 villas, and 29 labor camps, ensuring operational efficiency, tenant satisfaction, and long-term sustainability. His expertise strengthens the foundation of Dar Al Barakah\'s property-management operations.',
       specialties: ['Building Sales', 'Property Management', 'Commercial Leasing', 'Operational Excellence'],
     },
   ];
+
 
   const values = [
     {
@@ -82,6 +85,7 @@ const About = () => {
           ]),
         ]}
       />
+
       <HeroBanner
         chip="🕌 About Dar Al Barakah"
         title="Building Blessings, Creating Experiences"
@@ -91,10 +95,18 @@ const About = () => {
       />
 
       {/* Our Story */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="xl">
-          <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: { xs: 6, md: 8 },
+            }}
+          >
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -130,7 +142,9 @@ const About = () => {
                     fontSize: '1.1rem',
                   }}
                 >
-                  The word <strong style={{ color: '#a58654' }}>"Barakah"</strong> means blessing — 
+                  The word <strong style={{ color: '#a58654' }}>
+                    "Barakah"
+                  </strong> means blessing — 
                   and that's exactly what we strive to deliver in every stay and every partnership.
                 </Typography>
                 <Typography
@@ -159,9 +173,17 @@ const About = () => {
                   and 24/7 hospitality support, we make Dubai living effortless and profitable.
                 </Typography>
               </motion.div>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box
+              sx={{
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: { xs: 'center', md: 'flex-start' },
+                justifyContent: { xs: 'center', md: 'flex-end' },
+                width: { xs: '100%', md: 'auto' },
+                mt: { xs: 4, md: 0 },
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -169,18 +191,23 @@ const About = () => {
                 viewport={{ once: true }}
               >
                 <Box
+                  component="img"
+                  src={storyImg}
+                  alt="Dar Al Barakah Story"
                   sx={{
-                    position: 'relative',
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                    borderRadius: 8,
+                    boxShadow: '0 12px 48px rgba(0,0,0,0.18)',
+                    width: { xs: '260px', sm: '340px', md: '420px' },
+                    height: { xs: '260px', sm: '340px', md: '420px' },
+                    objectFit: 'contain',
+                    background: '#fff',
+                    p: 2,
+                    display: 'block',
                   }}
-                >
-                  <LazyImage src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80" alt="Dar Al Barakah Story" aspectRatio="4/3" />
-                </Box>
+                />
               </motion.div>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
@@ -243,7 +270,6 @@ const About = () => {
                 </Card>
               </motion.div>
             </Grid>
-
             <Grid item xs={12} md={6}>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -302,7 +328,7 @@ const About = () => {
       </Box>
 
       {/* Founders Section */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="xl">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div
@@ -364,26 +390,48 @@ const About = () => {
                         transform: 'translateY(-10px)',
                         boxShadow: '0 16px 48px rgba(165, 134, 84, 0.2)',
                       },
+                      p: { xs: 3, md: 4 },
                     }}
                   >
                     <Box
                       sx={{
-                        position: 'relative',
-                        height: 400,
-                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        alignItems: { xs: 'center', sm: 'flex-start' },
+                        gap: { xs: 3, sm: 4 },
                       }}
                     >
-                      <LazyImage src={founder.image} alt={founder.name} />
                       <Box
                         sx={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)',
-                          p: 3,
+                          flexShrink: 0,
+                          width: { xs: 220, sm: 300, md: 340 },
+                          height: { xs: 220, sm: 300, md: 340 },
+                          borderRadius: '50%',
+                          overflow: 'hidden',
+                          border: '6px solid #a58654',
+                          boxShadow: '0 8px 40px rgba(165,134,84,0.18)',
+                          background: '#222',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mt: { xs: 0, sm: 0, md: 0 },
+                          mb: { xs: 2, sm: 0 },
+                          alignSelf: 'center',
                         }}
                       >
+                        <img
+                          src={founder.image}
+                          alt={founder.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: 'center',
+                            display: 'block',
+                          }}
+                        />
+                      </Box>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Chip
                           label={founder.experience}
                           size="small"
@@ -409,50 +457,47 @@ const About = () => {
                           sx={{
                             color: '#6fa8a0',
                             fontWeight: 600,
+                            mb: 2,
                           }}
                         >
                           {founder.role}
                         </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            mb: 2,
+                            lineHeight: 1.7,
+                          }}
+                        >
+                          {founder.bio}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            mb: 3,
+                            lineHeight: 1.7,
+                          }}
+                        >
+                          {founder.expertise}
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {founder.specialties.map((specialty, idx) => (
+                            <Chip
+                              key={idx}
+                              label={specialty}
+                              size="small"
+                              sx={{
+                                bgcolor: 'rgba(165, 134, 84, 0.1)',
+                                color: '#a58654',
+                                fontWeight: 600,
+                              }}
+                            />
+                          ))}
+                        </Box>
                       </Box>
                     </Box>
-
-                    <CardContent sx={{ p: 4 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: 'text.secondary',
-                          mb: 2,
-                          lineHeight: 1.7,
-                        }}
-                      >
-                        {founder.bio}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          color: 'text.secondary',
-                          mb: 3,
-                          lineHeight: 1.7,
-                        }}
-                      >
-                        {founder.expertise}
-                      </Typography>
-
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {founder.specialties.map((specialty, idx) => (
-                          <Chip
-                            key={idx}
-                            label={specialty}
-                            size="small"
-                            sx={{
-                              bgcolor: 'rgba(165, 134, 84, 0.1)',
-                              color: '#a58654',
-                              fontWeight: 600,
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </CardContent>
                   </Card>
                 </motion.div>
               </Grid>
@@ -463,7 +508,7 @@ const About = () => {
 
       {/* Core Values */}
       <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
-        <Container maxWidth="xl">
+        <Container maxWidth="lg">
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -502,61 +547,68 @@ const About = () => {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card
+                <Card
+                  sx={{
+                    height: '100%',
+                    minHeight: 180,
+                    textAlign: 'center',
+                    p: { xs: 2, sm: 3 },
+                    borderRadius: 4,
+                    border: '1.5px solid',
+                    borderColor: 'rgba(165, 134, 84, 0.18)',
+                    boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    '&:hover': {
+                      transform: 'translateY(-8px) scale(1.03)',
+                      borderColor: '#a58654',
+                      boxShadow: '0 12px 40px rgba(165, 134, 84, 0.13)',
+                    },
+                  }}
+                >
+                  <Box
                     sx={{
-                      height: '100%',
-                      textAlign: 'center',
-                      p: 3,
-                      borderRadius: 3,
-                      border: '1px solid',
-                      borderColor: 'rgba(165, 134, 84, 0.2)',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        transform: 'translateY(-10px)',
-                        borderColor: '#a58654',
+                      width: 72,
+                      height: 72,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #a58654 0%, #c5a673 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 2,
+                      color: 'white',
+                      '& svg': {
+                        fontSize: '2.2rem',
                       },
                     }}
                   >
-                    <Box
-                      sx={{
-                        width: 70,
-                        height: 70,
-                        borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #a58654 0%, #c5a673 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 20px',
-                        color: 'white',
-                        '& svg': {
-                          fontSize: '2rem',
-                        },
-                      }}
-                    >
-                      {value.icon}
-                    </Box>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontWeight: 700,
-                        color: 'primary.main',
-                        mb: 1.5,
-                      }}
-                    >
-                      {value.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: 'text.secondary',
-                        lineHeight: 1.7,
-                      }}
-                    >
-                      {value.description}
-                    </Typography>
-                  </Card>
-                </motion.div>
+                    {value.icon}
+                  </Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontWeight: 700,
+                      color: 'primary.main',
+                      mb: 1.2,
+                    }}
+                  >
+                    {value.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
+                      lineHeight: 1.7,
+                      maxWidth: 320,
+                    }}
+                  >
+                    {value.description}
+                  </Typography>
+                </Card>
+              </motion.div>
               </Grid>
             ))}
           </Grid>
@@ -564,7 +616,7 @@ const About = () => {
       </Box>
 
       {/* Why Choose Us */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="lg">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
