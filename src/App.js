@@ -7,17 +7,14 @@ import 'aos/dist/aos.css';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Contexts
 import { AuthProvider } from './contexts/AuthContext';
 
-// Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import SplashScreen from './components/SplashScreen';
 
-// Public Pages
 import Home from './pages/Home';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
@@ -29,7 +26,6 @@ import BlogDetail from './pages/BlogDetail';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 
-// Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProperties from './pages/admin/AdminProperties';
@@ -40,7 +36,6 @@ import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminAgents from './pages/admin/AdminAgents';
 import AdminAgentForm from './pages/admin/AdminAgentForm';
 
-// Create React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -51,7 +46,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Theme
 const theme = createTheme({
   palette: {
     mode: 'dark',

@@ -1,6 +1,3 @@
-// Centralized structured data (JSON-LD) generators
-// Note: Update URLs, contact details, and social profiles with real production values before launch.
-
 const BASE_URL = 'https://www.daralbarakah.com';
 
 export const organizationSchema = {

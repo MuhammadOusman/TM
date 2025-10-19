@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Container, Typography, Grid, Card, CardContent, Chip, Paper, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, Container, Typography, Grid, Card, Chip, Paper, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { motion } from 'framer-motion';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -9,7 +9,6 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import SEO from '../components/SEO';
-import LazyImage from '../components/LazyImage';
 import storyImg from '../assets/image.png';
 import founder1 from '../assets/founder1.jpg';
 import HeroBanner from '../components/HeroBanner';

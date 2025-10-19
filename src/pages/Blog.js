@@ -1,24 +1,18 @@
-import React, { useMemo, useState } from 'react';
-import { Box, Container, Typography, Grid, Card, CardMedia, CardContent, Chip, Button, TextField, InputAdornment } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Container, Typography, Grid, Card, CardMedia, CardContent, Chip, Button, TextField } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import SearchIcon from '@mui/icons-material/Search';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PersonIcon from '@mui/icons-material/Person';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SEO from '../components/SEO';
 import HeroBanner from '../components/HeroBanner';
-import { BlogPageSkeleton } from '../components/LoadingSkeleton';
 import { breadcrumbSchema } from '../seo/structuredData';
 import { blogAPI } from '../services/api';
 
 const Blog = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
-
-  // Fetch blog posts with React Query
   const { data: postsResponse, isLoading, error } = useQuery({
     queryKey: ['blog-posts'],
     queryFn: blogAPI.getAll,

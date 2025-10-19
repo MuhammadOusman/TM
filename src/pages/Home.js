@@ -14,7 +14,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SEO from '../components/SEO';
 import { organizationSchema, websiteSchema } from '../seo/structuredData';
 import CountUp from 'react-countup';
-import { BackgroundBeams } from '../components/BackgroundBoxes';
 import LazyImage from '../components/LazyImage';
 import { propertiesAPI } from '../services/api';
 import { Swiper, SwiperSlide } from 'swiper/react';

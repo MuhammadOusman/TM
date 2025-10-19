@@ -52,27 +52,17 @@ const sampleProperties = [
 ];
 
 async function checkAndAddProperties() {
-  console.log('🔍 Checking existing properties...\n');
-
-  // Check existing properties
   const { data: existingProps, error: fetchError } = await supabase
     .from('properties')
     .select('*');
 
   if (fetchError) {
-    console.error('❌ Error fetching properties:', fetchError);
-    return;
+    throw fetchError;
   }
 
-  console.log(`📊 Found ${existingProps?.length || 0} existing properties`);
-
-  // Check featured properties
   const featuredProps = existingProps?.filter(p => p.featured) || [];
-  console.log(`⭐ Featured properties: ${featuredProps.length}\n`);
 
   if (featuredProps.length === 0) {
-    console.log('➕ Adding sample featured properties...\n');
-
     for (const property of sampleProperties) {
       const { data, error } = await supabase
         .from('properties')
@@ -80,31 +70,16 @@ async function checkAndAddProperties() {
         .select();
 
       if (error) {
-        console.error(`❌ Error adding "${property.title}":`, error.message);
-      } else {
-        console.log(`✅ Added: ${property.title}`);
+        throw error;
       }
     }
-
-    console.log('\n🎉 Sample properties added successfully!');
-    console.log('🌐 Refresh your website to see featured properties.');
-  } else {
-    console.log('✅ Featured properties already exist:');
-    featuredProps.forEach((prop, i) => {
-      console.log(`   ${i + 1}. ${prop.title} (${prop.location})`);
-    });
   }
-
-  console.log('\n📝 You can also add properties via Admin Panel:');
-  console.log('   🔗 https://your-site.netlify.app/admin/properties');
 }
 
 checkAndAddProperties()
   .then(() => {
-    console.log('\n✨ Done!');
     process.exit(0);
   })
   .catch((err) => {
-    console.error('\n❌ Unexpected error:', err);
     process.exit(1);
   });

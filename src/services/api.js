@@ -1,11 +1,6 @@
 import { supabase } from '../lib/supabase';
 
-// =============================================
-// PROPERTIES API
-// =============================================
-
 export const propertiesAPI = {
-  // Get all properties (public)
   getAll: async (filters = {}) => {
     let query = supabase
       .from('properties')
@@ -27,7 +22,6 @@ export const propertiesAPI = {
     return { data, error };
   },
 
-  // Get single property by ID
   getById: async (id) => {
     const { data, error } = await supabase
       .from('properties')
@@ -35,19 +29,16 @@ export const propertiesAPI = {
       .eq('id', id)
       .single();
 
-    // Increment view count (only if RPC function exists)
     if (data && !error) {
       try {
         await supabase.rpc('increment_property_views', { property_uuid: id });
       } catch (err) {
-        console.log('View count increment skipped');
       }
     }
 
     return { data, error };
   },
 
-  // Admin: Create property
   create: async (propertyData) => {
     const { data, error } = await supabase
       .from('properties')
@@ -57,7 +48,6 @@ export const propertiesAPI = {
     return { data, error };
   },
 
-  // Admin: Update property
   update: async (id, propertyData) => {
     const { data, error } = await supabase
       .from('properties')
@@ -68,7 +58,6 @@ export const propertiesAPI = {
     return { data, error };
   },
 
-  // Admin: Delete property
   delete: async (id) => {
     const { error } = await supabase
       .from('properties')
@@ -77,7 +66,6 @@ export const propertiesAPI = {
     return { error };
   },
 
-  // Admin: Get all properties (including inactive)
   getAllAdmin: async () => {
     const { data, error } = await supabase
       .from('properties')
@@ -87,12 +75,7 @@ export const propertiesAPI = {
   },
 };
 
-// =============================================
-// BLOG API
-// =============================================
-
 export const blogAPI = {
-  // Get all published blog posts
   getAll: async (filters = {}) => {
     let query = supabase
       .from('blog_posts')
@@ -114,7 +97,6 @@ export const blogAPI = {
     return { data, error };
   },
 
-  // Get single blog post by slug
   getBySlug: async (slug) => {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -125,7 +107,6 @@ export const blogAPI = {
       .eq('slug', slug)
       .single();
 
-    // Increment view count
     if (data && !error) {
       await supabase.rpc('increment_blog_views', { blog_uuid: data.id });
     }
@@ -133,7 +114,6 @@ export const blogAPI = {
     return { data, error };
   },
 
-  // Admin: Get single blog post by ID (for editing)
   getById: async (id) => {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -143,7 +123,6 @@ export const blogAPI = {
     return { data, error };
   },
 
-  // Admin: Create blog post
   create: async (postData) => {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -153,7 +132,6 @@ export const blogAPI = {
     return { data, error };
   },
 
-  // Admin: Update blog post
   update: async (id, postData) => {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -164,7 +142,6 @@ export const blogAPI = {
     return { data, error };
   },
 
-  // Admin: Delete blog post
   delete: async (id) => {
     const { error } = await supabase
       .from('blog_posts')
@@ -173,7 +150,6 @@ export const blogAPI = {
     return { error };
   },
 
-  // Admin: Get all blog posts (including drafts)
   getAllAdmin: async () => {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -186,12 +162,7 @@ export const blogAPI = {
   },
 };
 
-// =============================================
-// AGENTS API
-// =============================================
-
 export const agentsAPI = {
-  // Get all active agents
   getAll: async () => {
     const { data, error } = await supabase
       .from('agents')
@@ -201,7 +172,6 @@ export const agentsAPI = {
     return { data, error };
   },
 
-  // Admin: Get single agent by ID (for editing)
   getById: async (id) => {
     const { data, error } = await supabase
       .from('agents')
@@ -211,7 +181,6 @@ export const agentsAPI = {
     return { data, error };
   },
 
-  // Admin: Create agent
   create: async (agentData) => {
     const { data, error } = await supabase
       .from('agents')
@@ -221,7 +190,6 @@ export const agentsAPI = {
     return { data, error };
   },
 
-  // Admin: Update agent
   update: async (id, agentData) => {
     const { data, error } = await supabase
       .from('agents')
@@ -232,7 +200,6 @@ export const agentsAPI = {
     return { data, error };
   },
 
-  // Admin: Delete agent
   delete: async (id) => {
     const { error } = await supabase
       .from('agents')
@@ -242,12 +209,7 @@ export const agentsAPI = {
   },
 };
 
-// =============================================
-// CONTACT INQUIRIES API
-// =============================================
-
 export const inquiriesAPI = {
-  // Submit contact inquiry (public)
   create: async (inquiryData) => {
     const { data, error } = await supabase
       .from('contact_inquiries')
@@ -257,7 +219,6 @@ export const inquiriesAPI = {
     return { data, error };
   },
 
-  // Admin: Get all inquiries
   getAll: async (status = null) => {
     let query = supabase
       .from('contact_inquiries')
@@ -275,7 +236,6 @@ export const inquiriesAPI = {
     return { data, error };
   },
 
-  // Admin: Update inquiry status
   updateStatus: async (id, status, adminNotes = null) => {
     const updateData = { status, updated_at: new Date().toISOString() };
     if (adminNotes) {
@@ -292,12 +252,7 @@ export const inquiriesAPI = {
   },
 };
 
-// =============================================
-// ANALYTICS API
-// =============================================
-
 export const analyticsAPI = {
-  // Track event
   trackEvent: async (eventType, entityType = null, entityId = null, metadata = {}) => {
     const { data, error } = await supabase
       .from('analytics_events')
@@ -313,17 +268,14 @@ export const analyticsAPI = {
     return { data, error };
   },
 
-  // Admin: Get dashboard stats
   getDashboardStats: async () => {
     try {
-      // Get counts from each table
       const [properties, blogPosts, inquiries] = await Promise.all([
         supabase.from('properties').select('id', { count: 'exact', head: true }),
         supabase.from('blog_posts').select('id', { count: 'exact', head: true }),
         supabase.from('contact_inquiries').select('id', { count: 'exact', head: true })
       ]);
 
-      // Get new inquiries count
       const { count: newInquiriesCount } = await supabase
         .from('contact_inquiries')
         .select('id', { count: 'exact', head: true })
@@ -341,8 +293,7 @@ export const analyticsAPI = {
 
       return { data: stats, error: null };
     } catch (error) {
-      console.error('Dashboard stats error:', error);
-      return { 
+      return {
         data: {
           totalProperties: 0,
           totalBlogPosts: 0,
@@ -351,13 +302,12 @@ export const analyticsAPI = {
           totalViews: 0,
           inProgressInquiries: 0,
           respondedInquiries: 0
-        }, 
-        error 
+        },
+        error
       };
     }
   },
 
-  // Admin: Get analytics data for charts
   getChartData: async (days = 30) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
@@ -370,7 +320,6 @@ export const analyticsAPI = {
 
     if (error || !data) return { data: [], error };
 
-    // Group data by date
     const chartData = {};
     data.forEach(event => {
       const date = new Date(event.created_at).toISOString().split('T')[0];
@@ -385,7 +334,6 @@ export const analyticsAPI = {
     return { data: Object.values(chartData), error: null };
   },
 
-  // Admin: Get top viewed properties
   getTopProperties: async (limit = 5) => {
     const { data, error } = await supabase
       .from('properties')
@@ -395,7 +343,6 @@ export const analyticsAPI = {
     return { data: data || [], error };
   },
 
-  // Admin: Get top viewed blog posts
   getTopBlogPosts: async (limit = 5) => {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -406,12 +353,7 @@ export const analyticsAPI = {
   },
 };
 
-// =============================================
-// SERVICES API
-// =============================================
-
 export const servicesAPI = {
-  // Get all active services
   getAll: async () => {
     const { data, error } = await supabase
       .from('services')
@@ -421,7 +363,6 @@ export const servicesAPI = {
     return { data, error };
   },
 
-  // Admin: Create service
   create: async (serviceData) => {
     const { data, error } = await supabase
       .from('services')
@@ -431,7 +372,6 @@ export const servicesAPI = {
     return { data, error };
   },
 
-  // Admin: Update service
   update: async (id, serviceData) => {
     const { data, error } = await supabase
       .from('services')
@@ -442,7 +382,6 @@ export const servicesAPI = {
     return { data, error };
   },
 
-  // Admin: Delete service
   delete: async (id) => {
     const { error } = await supabase
       .from('services')
@@ -452,12 +391,7 @@ export const servicesAPI = {
   },
 };
 
-// =============================================
-// STORAGE API (for image uploads)
-// =============================================
-
 export const storageAPI = {
-  // Upload image
   uploadImage: async (file, bucket = 'properties') => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
@@ -469,7 +403,6 @@ export const storageAPI = {
 
     if (error) return { data: null, error };
 
-    // Get public URL
     const { data: { publicUrl } } = supabase.storage
       .from(bucket)
       .getPublicUrl(filePath);
@@ -477,7 +410,6 @@ export const storageAPI = {
     return { data: { path: filePath, url: publicUrl }, error: null };
   },
 
-  // Delete image
   deleteImage: async (filePath, bucket = 'properties') => {
     const { error } = await supabase.storage
       .from(bucket)

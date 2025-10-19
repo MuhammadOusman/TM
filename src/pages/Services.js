@@ -16,7 +16,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import SEO from '../components/SEO';
 import HeroBanner from '../components/HeroBanner';
-import { BackgroundBeams } from '../components/BackgroundBoxes';
 
 const Services = () => {
   // Primary services with detailed feature sets

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Card, CardContent, Skeleton, Grid, Container } from '@mui/material';
 
-// Property Card Skeleton
 export const PropertyCardSkeleton = () => (
   <Card
     sx={{
@@ -24,7 +23,6 @@ export const PropertyCardSkeleton = () => (
   </Card>
 );
 
-// Blog Card Skeleton
 export const BlogCardSkeleton = () => (
   <Card
     sx={{
@@ -47,7 +45,6 @@ export const BlogCardSkeleton = () => (
   </Card>
 );
 
-// Properties Page Skeleton
 export const PropertiesPageSkeleton = () => (
   <Container maxWidth="xl" sx={{ py: 8 }}>
     <Grid container spacing={4}>
@@ -60,7 +57,6 @@ export const PropertiesPageSkeleton = () => (
   </Container>
 );
 
-// Blog Page Skeleton
 export const BlogPageSkeleton = () => (
   <Container maxWidth="xl" sx={{ py: 8 }}>
     <Grid container spacing={4}>
@@ -73,7 +69,6 @@ export const BlogPageSkeleton = () => (
   </Container>
 );
 
-// Property Detail Skeleton
 export const PropertyDetailSkeleton = () => (
   <Container maxWidth="xl" sx={{ py: 8 }}>
     <Skeleton variant="rectangular" height={500} sx={{ borderRadius: 4, mb: 4 }} animation="wave" />

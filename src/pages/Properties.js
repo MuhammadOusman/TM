@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -47,12 +47,10 @@ const Properties = () => {
   });
 
   // Fetch properties with React Query
-  const { data: fetchedProperties, isLoading, error: queryError } = useQuery({
+  const { data: fetchedProperties, isLoading } = useQuery({
     queryKey: ['properties'],
     queryFn: async () => {
-      console.log('Fetching properties from API...');
       const result = await propertiesAPI.getAll();
-      console.log('API Response:', result);
       return result;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -228,12 +226,6 @@ const Properties = () => {
       </Box>
     );
   }
-
-  console.log('Query Error:', queryError);
-  console.log('fetchedProperties:', fetchedProperties);
-  console.log('properties:', properties);
-  console.log('filteredProperties:', filteredProperties);
-  console.log('appliedFilters:', appliedFilters);
 
   return (
     <Box>
