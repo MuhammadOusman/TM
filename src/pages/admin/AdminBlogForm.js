@@ -11,6 +11,8 @@ import {
   FormControl,
   InputLabel,
   Select,
+    FormControlLabel,
+    Switch,
   IconButton,
   CircularProgress,
   Alert,
@@ -47,6 +49,7 @@ const AdminBlogForm = () => {
     category: '',
     author: '',
     status: 'draft',
+      featured: false,
   });
 
   const [image, setImage] = useState(null);
@@ -55,11 +58,13 @@ const AdminBlogForm = () => {
   const [error, setError] = useState('');
 
   // Fetch blog post data if editing
-  const { data: post, isLoading } = useQuery({
+  const { data: postResponse, isLoading } = useQuery({
     queryKey: ['blogPost', id],
     queryFn: () => blogAPI.getById(id),
     enabled: isEditing,
   });
+
+  const post = postResponse?.data;
 
   useEffect(() => {
     if (post) {
@@ -71,6 +76,7 @@ const AdminBlogForm = () => {
         category: post.category || '',
         author: post.author || '',
         status: post.status || 'draft',
+          featured: post.featured || false,
       });
       setExistingImage(post.image || '');
     }
@@ -95,8 +101,15 @@ const AdminBlogForm = () => {
       // Upload new image if selected
       if (image) {
         setUploading(true);
-        imageUrl = await storageAPI.uploadImage(image, 'blog');
+        const uploadResult = await storageAPI.uploadImage(image, 'blog');
         setUploading(false);
+        
+        if (uploadResult.error) {
+          throw new Error(uploadResult.error.message || 'Failed to upload image');
+        }
+        
+        // Use the public URL from the upload result
+        imageUrl = uploadResult.data.url;
       }
 
       const blogData = {
@@ -338,6 +351,56 @@ const AdminBlogForm = () => {
                 </Select>
               </FormControl>
             </Grid>
+
+              {/* Featured Toggle */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  height: '100%',
+                  border: '1px solid rgba(212, 175, 55, 0.2)',
+                  borderRadius: 1,
+                  px: 2,
+                  py: 1.5,
+                  bgcolor: formData.featured ? 'rgba(212, 175, 55, 0.05)' : 'transparent',
+                }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={formData.featured}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, featured: e.target.checked }))}
+                        sx={{
+                          '& .MuiSwitch-switchBase.Mui-checked': {
+                            color: '#D4AF37',
+                          },
+                          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                            backgroundColor: '#D4AF37',
+                          },
+                        }}
+                      />
+                    }
+                    label={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography sx={{ color: 'text.primary', fontWeight: 500 }}>
+                          Featured Post
+                        </Typography>
+                        {formData.featured && (
+                          <Typography variant="caption" sx={{ 
+                            bgcolor: 'rgba(212, 175, 55, 0.2)', 
+                            color: '#D4AF37',
+                            px: 1,
+                            py: 0.3,
+                            borderRadius: 1,
+                            fontWeight: 600,
+                          }}>
+                            ⭐ FEATURED
+                          </Typography>
+                        )}
+                      </Box>
+                    }
+                  />
+                </Box>
+              </Grid>
 
             {/* Submit Buttons */}
             <Grid item xs={12}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Container, Typography, Grid, Card, CardMedia, CardContent, Chip, Button, TextField, InputAdornment } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -16,141 +16,37 @@ import { blogAPI } from '../services/api';
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
 
   // Fetch blog posts with React Query
-  const { data: fetchedPosts, isLoading } = useQuery({
+  const { data: postsResponse, isLoading, error } = useQuery({
     queryKey: ['blog-posts'],
     queryFn: blogAPI.getAll,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Fallback mock data
-  const mockBlogPosts = [
-    {
-      id: 1,
-      title: 'Top 10 Neighborhoods in Dubai for Holiday Homes in 2025',
-      excerpt: 'Discover the most sought-after areas in Dubai for short-term rentals. From Downtown Dubai to Palm Jumeirah, we explore the best locations for your investment.',
-      image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&q=80',
-      category: 'Investment',
-      author: 'Talha Musharraf',
-      date: 'October 5, 2025',
-      readTime: '8 min read',
-      featured: true,
-    },
-    {
-      id: 2,
-      title: 'Maximizing ROI: A Complete Guide to Property Management',
-      excerpt: 'Learn proven strategies to increase your property returns through effective management, smart pricing, and excellent guest experiences.',
-      image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
-      category: 'Property Management',
-      author: 'Hamza Awais',
-      date: 'October 1, 2025',
-      readTime: '10 min read',
-      featured: true,
-    },
-    {
-      id: 3,
-      title: 'Dubai Real Estate Market Trends: What to Expect in 2025',
-      excerpt: 'An in-depth analysis of the current market conditions, emerging opportunities, and expert predictions for Dubai\'s real estate sector.',
-      image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80',
-      category: 'Market Insights',
-      author: 'Mohammed Al Rashid',
-      date: 'September 28, 2025',
-      readTime: '12 min read',
-      featured: false,
-    },
-    {
-      id: 4,
-      title: 'The Ultimate Guest Experience: Tips for Holiday Home Hosts',
-      excerpt: 'Create unforgettable stays for your guests with these hospitality best practices and amenities that guests love.',
-      image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80',
-      category: 'Hosting Tips',
-      author: 'Aisha Khan',
-      date: 'September 25, 2025',
-      readTime: '6 min read',
-      featured: false,
-    },
-    {
-      id: 5,
-      title: 'Legal Requirements for Short-Term Rentals in Dubai',
-      excerpt: 'Everything you need to know about permits, regulations, and compliance when operating a holiday home in Dubai.',
-      image: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80',
-      category: 'Legal & Compliance',
-      author: 'Talha Musharraf',
-      date: 'September 20, 2025',
-      readTime: '9 min read',
-      featured: false,
-    },
-    {
-      id: 6,
-      title: 'Smart Home Technology for Modern Holiday Rentals',
-      excerpt: 'Explore the latest smart home innovations that can enhance guest experiences and streamline property management.',
-      image: 'https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80',
-      category: 'Technology',
-      author: 'Omar Hassan',
-      date: 'September 15, 2025',
-      readTime: '7 min read',
-      featured: false,
-    },
-    {
-      id: 7,
-      title: 'Seasonal Pricing Strategies for Maximum Occupancy',
-      excerpt: 'Master the art of dynamic pricing to optimize your revenue throughout the year in Dubai\'s seasonal market.',
-      image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&q=80',
-      category: 'Revenue Management',
-      author: 'Sarah Ahmed',
-      date: 'September 10, 2025',
-      readTime: '8 min read',
-      featured: false,
-    },
-    {
-      id: 8,
-      title: 'Investing in Off-Plan Properties: Risks and Rewards',
-      excerpt: 'A comprehensive guide to off-plan investments in Dubai, including market analysis, developer selection, and risk mitigation.',
-      image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
-      category: 'Investment',
-      author: 'Mohammed Al Rashid',
-      date: 'September 5, 2025',
-      readTime: '11 min read',
-      featured: false,
-    },
-    {
-      id: 9,
-      title: 'Creating Instagram-Worthy Spaces: Interior Design Tips',
-      excerpt: 'Transform your property into a photogenic paradise that guests will love to share on social media.',
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
-      category: 'Design',
-      author: 'Aisha Khan',
-      date: 'August 30, 2025',
-      readTime: '6 min read',
-      featured: false,
-    },
-  ];
-
-  // Use fetched data if available, otherwise use mock data
-  const blogPosts = fetchedPosts && fetchedPosts.length > 0 ? fetchedPosts : mockBlogPosts;
-
-  const categories = ['All', 'Investment', 'Property Management', 'Market Insights', 'Hosting Tips', 'Legal & Compliance', 'Technology', 'Revenue Management', 'Design'];
-
-  // Show loading skeleton
-  if (isLoading) {
-    return (
-      <Box>
-        <SEO
-          title="Blog & Insights - Loading..."
-          description="Loading expert insights on Dubai real estate..."
-        />
-        <HeroBanner
-          chip="Blog & Insights"
-          title="Real Estate Insights & Tips"
-          subtitle="Expert advice, market trends, and success stories from Dubai's real estate industry"
-          image="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1920&q=80"
-          minHeight="50vh"
-        />
-        <BlogPageSkeleton />
-      </Box>
-    );
-  }
+  // Transform Supabase response to UI-friendly shape
+  const blogPosts = React.useMemo(() => {
+    const rows = postsResponse?.data || [];
+    return rows.map((p) => {
+      const created = p.created_at ? new Date(p.created_at) : null;
+      const dateStr = created ? created.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
+      const readTime = p.read_time || (p.content ? `${Math.max(1, Math.round(p.content.split(/\s+/).length / 200))} min read` : '');
+      const authorName = p.author || p.agents?.name || '—';
+      return {
+        id: p.id,
+        title: p.title,
+        excerpt: p.excerpt || '',
+        image: p.image || p.featured_image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80',
+        category: p.category || 'General',
+        author: authorName,
+        date: dateStr,
+        readTime,
+        featured: !!p.featured,
+        slug: p.slug,
+      };
+    });
+  }, [postsResponse]);
 
   return (
     <Box>
@@ -174,62 +70,18 @@ const Blog = () => {
       <Box
         sx={{
           py: 4,
-          bgcolor: 'white',
-          borderBottom: '1px solid rgba(0,0,0,0.1)',
+          bgcolor: '#232a32',
+          borderBottom: '1px solid rgba(212, 175, 55, 0.08)',
         }}
       >
         <Container maxWidth="xl">
           <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                placeholder="Search articles..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#a58654' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '&:hover fieldset': {
-                      borderColor: '#a58654',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#a58654',
-                    },
-                  },
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
-                {categories.map((category) => (
-                  <Chip
-                    key={category}
-                    label={category}
-                    onClick={() => {}}
-                    sx={{
-                      bgcolor: category === 'All' ? '#a58654' : 'rgba(165, 134, 84, 0.1)',
-                      color: category === 'All' ? 'white' : '#a58654',
-                      fontWeight: 600,
-                      '&:hover': {
-                        bgcolor: category === 'All' ? '#8b6f47' : 'rgba(165, 134, 84, 0.2)',
-                      },
-                    }}
-                  />
-                ))}
-              </Box>
-            </Grid>
           </Grid>
         </Container>
       </Box>
 
       {/* Featured Posts */}
-      <Box sx={{ py: 8, bgcolor: 'background.paper' }}>
+  <Box sx={{ py: 8, bgcolor: '#232a32' }}>
         <Container maxWidth="xl">
           <Box sx={{ mb: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
@@ -332,6 +184,8 @@ const Blog = () => {
                       </Typography>
 
                       <Button
+                        component={Link}
+                        to={post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`}
                         endIcon={<ArrowForwardIcon />}
                         sx={{
                           color: '#a58654',
@@ -353,7 +207,7 @@ const Blog = () => {
       </Box>
 
       {/* All Posts */}
-      <Box sx={{ py: 8, bgcolor: 'white' }}>
+  <Box sx={{ py: 8, bgcolor: 'background.paper' }}>
         <Container maxWidth="xl">
           <Typography
             variant="h3"
@@ -480,7 +334,7 @@ const Blog = () => {
 
                       <Button
                         component={Link}
-                        to={`/blog/${post.id}`}
+                        to={post.slug ? `/blog/${post.slug}` : `/blog/${post.id}`}
                         endIcon={<ArrowForwardIcon />}
                         fullWidth
                         sx={{

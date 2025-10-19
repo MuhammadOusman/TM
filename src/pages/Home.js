@@ -371,7 +371,7 @@ const Home = () => {
 
       {/* About Preview */}
       <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
-        <Container maxWidth="xl">
+        <Box sx={{ width: '100%', px: { xs: 0, md: 4 } }}>
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
               <motion.div
@@ -393,23 +393,6 @@ const Home = () => {
                     alt="Dar Al Barakah"
                     aspectRatio="4/3"
                   />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 20,
-                      right: 20,
-                      bgcolor: '#a58654',
-                      color: 'white',
-                      px: 3,
-                      py: 1.5,
-                      borderRadius: 2,
-                      fontWeight: 700,
-                      fontSize: '1.1rem',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                    }}
-                  >
-                    Since 2020
-                  </Box>
                 </Box>
               </motion.div>
             </Grid>
@@ -488,7 +471,7 @@ const Home = () => {
               </motion.div>
             </Grid>
           </Grid>
-        </Container>
+  </Box>
       </Box>
 
       {/* Features Section */}

@@ -132,7 +132,7 @@ const FAQ = () => {
       />
 
       {/* FAQ Content */}
-      <Box sx={{ py: 12, bgcolor: 'white' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="lg">
           {faqCategories.map((category, catIndex) => (
             <Box key={catIndex} sx={{ mb: 6 }}>
@@ -186,12 +186,14 @@ const FAQ = () => {
                     sx={{
                       mb: 2,
                       borderRadius: 2,
+                      background: 'linear-gradient(135deg, #273444 0%, #1A2027 100%)',
+                      border: '1px solid rgba(212, 175, 55, 0.15)',
                       '&:before': {
                         display: 'none',
                       },
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
                       '&.Mui-expanded': {
-                        boxShadow: `0 4px 16px ${category.color}30`,
+                        boxShadow: `0 12px 32px ${category.color}30`,
                       },
                     }}
                   >
@@ -201,13 +203,14 @@ const FAQ = () => {
                         '& .MuiAccordionSummary-content': {
                           my: 2,
                         },
+                        color: '#F0F2F5',
                       }}
                     >
                       <Typography
                         variant="h6"
                         sx={{
                           fontWeight: 600,
-                          color: expanded === `panel${catIndex}${faqIndex}` ? category.color : 'text.primary',
+                          color: expanded === `panel${catIndex}${faqIndex}` ? category.color : '#F0F2F5',
                         }}
                       >
                         {faq.question}
@@ -217,7 +220,7 @@ const FAQ = () => {
                       <Typography
                         variant="body1"
                         sx={{
-                          color: 'text.secondary',
+                          color: 'rgba(240, 242, 245, 0.8)',
                           lineHeight: 1.8,
                         }}
                       >
@@ -233,7 +236,7 @@ const FAQ = () => {
       </Box>
 
       {/* Still Have Questions CTA */}
-      <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
+      <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
         <Container maxWidth="md">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

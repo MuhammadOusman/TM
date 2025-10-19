@@ -25,6 +25,7 @@ import Contact from './pages/Contact';
 import Services from './pages/Services';
 import Agents from './pages/Agents';
 import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 
@@ -218,6 +219,7 @@ function App() {
                       <Route path="/services" element={<Services />} />
                       <Route path="/agents" element={<Agents />} />
                       <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:slug" element={<BlogDetail />} />
                       <Route path="/properties" element={<Properties />} />
                       <Route path="/properties/:id" element={<PropertyDetail />} />
                     </Routes>

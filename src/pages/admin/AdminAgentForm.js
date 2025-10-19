@@ -71,7 +71,16 @@ const AdminAgentForm = () => {
         rating: agent.rating || 5.0,
         status: agent.status || 'active',
       });
-      setImagePreview(agent.image_url || '');
+      // Support both string and object for image_url
+      if (agent.image_url) {
+        if (typeof agent.image_url === 'object' && agent.image_url.url) {
+          setImagePreview(agent.image_url.url);
+        } else {
+          setImagePreview(agent.image_url);
+        }
+      } else {
+        setImagePreview('');
+      }
     }
   }, [agentData]);
 
@@ -165,9 +174,10 @@ const AdminAgentForm = () => {
       if (!imageUrl) return;
     }
 
+    // Always save direct URL string
     const agentData = {
       ...formData,
-      image_url: imageUrl,
+      image_url: typeof imageUrl === 'object' && imageUrl.url ? imageUrl.url : imageUrl,
       rating: parseFloat(formData.rating),
     };
 

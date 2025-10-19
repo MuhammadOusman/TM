@@ -33,6 +33,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { blogAPI } from '../../services/api';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -46,6 +48,7 @@ const AdminBlog = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+    const [featuredFilter, setFeaturedFilter] = useState('all');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -78,6 +81,16 @@ const AdminBlog = () => {
     },
   });
 
+    // Toggle featured mutation
+    const toggleFeaturedMutation = useMutation({
+      mutationFn: ({ id, featured }) =>
+        blogAPI.update(id, { featured: !featured }),
+      onSuccess: () => {
+        queryClient.invalidateQueries(['adminBlogPosts']);
+        handleMenuClose();
+      },
+    });
+
   // Filter posts
   const filteredPosts = posts?.filter((post) => {
     const matchesSearch =
@@ -85,8 +98,11 @@ const AdminBlog = () => {
       post.category.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
+      const matchesFeatured = featuredFilter === 'all' || 
+                              (featuredFilter === 'featured' && post.featured) ||
+                              (featuredFilter === 'notfeatured' && !post.featured);
     
-    return matchesSearch && matchesStatus;
+      return matchesSearch && matchesStatus && matchesFeatured;
   }) || [];
 
   // Paginated posts
@@ -131,6 +147,12 @@ const AdminBlog = () => {
       toggleStatusMutation.mutate({ id: selectedPost.id, status: selectedPost.status });
     }
   };
+
+    const handleToggleFeatured = () => {
+      if (selectedPost) {
+        toggleFeaturedMutation.mutate({ id: selectedPost.id, featured: selectedPost.featured });
+      }
+    };
 
   if (isLoading) {
     return (
@@ -217,6 +239,34 @@ const AdminBlog = () => {
                 color={statusFilter === 'draft' ? 'primary' : 'default'}
                 sx={{ cursor: 'pointer' }}
               />
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1, borderLeft: '1px solid rgba(212, 175, 55, 0.2)', pl: 2 }}>
+                <Chip
+                  label="All Posts"
+                  onClick={() => setFeaturedFilter('all')}
+                  color={featuredFilter === 'all' ? 'primary' : 'default'}
+                  sx={{ cursor: 'pointer' }}
+                />
+                <Chip
+                  icon={<StarIcon />}
+                  label="Featured"
+                  onClick={() => setFeaturedFilter('featured')}
+                  color={featuredFilter === 'featured' ? 'primary' : 'default'}
+                  sx={{ 
+                    cursor: 'pointer',
+                    ...(featuredFilter === 'featured' && {
+                      bgcolor: 'rgba(212, 175, 55, 0.15)',
+                      color: '#D4AF37',
+                      borderColor: '#D4AF37',
+                    })
+                  }}
+                />
+                <Chip
+                  label="Not Featured"
+                  onClick={() => setFeaturedFilter('notfeatured')}
+                  color={featuredFilter === 'notfeatured' ? 'primary' : 'default'}
+                  sx={{ cursor: 'pointer' }}
+                />
             </Box>
           </Box>
         </Paper>
@@ -247,6 +297,9 @@ const AdminBlog = () => {
                     <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }} align="center">
                       Views
                     </TableCell>
+                      <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }} align="center">
+                        Featured
+                      </TableCell>
                     <TableCell sx={{ color: 'text.secondary', fontWeight: 600 }} align="center">
                       Status
                     </TableCell>
@@ -258,7 +311,7 @@ const AdminBlog = () => {
                 <TableBody>
                   {paginatedPosts.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} align="center" sx={{ py: 8, color: 'text.secondary' }}>
+                        <TableCell colSpan={8} align="center" sx={{ py: 8, color: 'text.secondary' }}>
                         No blog posts found
                       </TableCell>
                     </TableRow>
@@ -280,7 +333,14 @@ const AdminBlog = () => {
                                 }}
                               />
                             )}
-                            <Typography sx={{ fontWeight: 500 }}>{post.title}</Typography>
+                              <Box>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Typography sx={{ fontWeight: 500 }}>{post.title}</Typography>
+                                  {post.featured && (
+                                    <StarIcon sx={{ fontSize: '1rem', color: '#D4AF37' }} />
+                                  )}
+                                </Box>
+                              </Box>
                           </Box>
                         </TableCell>
                         <TableCell sx={{ color: 'text.primary' }}>{post.category}</TableCell>
@@ -294,6 +354,25 @@ const AdminBlog = () => {
                             <Typography variant="body2">{post.views || 0}</Typography>
                           </Box>
                         </TableCell>
+                          <TableCell align="center">
+                            {post.featured ? (
+                              <Chip
+                                icon={<StarIcon sx={{ fontSize: '1rem !important' }} />}
+                                label="Featured"
+                                size="small"
+                                sx={{
+                                  bgcolor: 'rgba(212, 175, 55, 0.15)',
+                                  color: '#D4AF37',
+                                  fontWeight: 600,
+                                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                                }}
+                              />
+                            ) : (
+                              <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+                                -
+                              </Typography>
+                            )}
+                          </TableCell>
                         <TableCell align="center">
                           <Chip
                             label={post.status}
@@ -335,6 +414,14 @@ const AdminBlog = () => {
             <EditIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
             Edit
           </MenuItem>
+            <MenuItem onClick={handleToggleFeatured}>
+              {selectedPost?.featured ? (
+                <StarBorderIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#D4AF37' }} />
+              ) : (
+                <StarIcon sx={{ mr: 1, fontSize: '1.2rem', color: '#D4AF37' }} />
+              )}
+              {selectedPost?.featured ? 'Remove Featured' : 'Mark as Featured'}
+            </MenuItem>
           <MenuItem onClick={handleToggleStatus}>
             <VisibilityIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
             {selectedPost?.status === 'published' ? 'Unpublish' : 'Publish'}

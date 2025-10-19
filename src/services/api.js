@@ -133,6 +133,16 @@ export const blogAPI = {
     return { data, error };
   },
 
+  // Admin: Get single blog post by ID (for editing)
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('id', id)
+      .single();
+    return { data, error };
+  },
+
   // Admin: Create blog post
   create: async (postData) => {
     const { data, error } = await supabase
@@ -188,6 +198,16 @@ export const agentsAPI = {
       .select('*')
       .eq('status', 'active')
       .order('created_at', { ascending: true });
+    return { data, error };
+  },
+
+  // Admin: Get single agent by ID (for editing)
+  getById: async (id) => {
+    const { data, error } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('id', id)
+      .single();
     return { data, error };
   },
 

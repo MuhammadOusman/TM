@@ -142,11 +142,11 @@ const AdminAgents = () => {
                   }}
                 >
                   {/* Agent Image */}
-                  {agent.image ? (
+                  {agent.image_url && ((typeof agent.image_url === 'object' && agent.image_url.url) || typeof agent.image_url === 'string') ? (
                     <CardMedia
                       component="img"
                       height="300"
-                      image={agent.image}
+                      image={typeof agent.image_url === 'object' ? agent.image_url.url : agent.image_url}
                       alt={agent.name}
                       sx={{ objectFit: 'cover' }}
                     />
