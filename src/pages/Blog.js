@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Container, Typography, Grid, Card, CardMedia, CardContent, Chip, Button, TextField } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -13,7 +13,7 @@ import { breadcrumbSchema } from '../seo/structuredData';
 import { blogAPI } from '../services/api';
 
 const Blog = () => {
-  const { data: postsResponse, isLoading, error } = useQuery({
+  const { data: postsResponse } = useQuery({
     queryKey: ['blog-posts'],
     queryFn: blogAPI.getAll,
     staleTime: 5 * 60 * 1000, // 5 minutes

@@ -31,6 +31,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { inquiriesAPI } from '../../services/api';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
+import { supabase } from '../../lib/supabase';
 
 const AdminInquiries = () => {
   const navigate = useNavigate();
@@ -42,12 +43,39 @@ const AdminInquiries = () => {
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedInquiry, setSelectedInquiry] = useState(null);
 
-  // Fetch inquiries
+  // Fetch inquiries using a simpler approach that works
   const { data: inquiriesData, isLoading, error } = useQuery({
     queryKey: ['adminInquiries'],
-    queryFn: inquiriesAPI.getAll,
+    queryFn: async () => {
+      try {
+        // Use the same approach as dashboard but fetch full data
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          console.log('Admin authenticated, fetching inquiries...');
+          const { data, error } = await supabase
+            .from('contact_inquiries')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            console.error('Error fetching inquiries:', error);
+            throw error;
+          }
+
+          console.log('Inquiries fetched successfully:', data?.length || 0);
+          return data || [];
+        } else {
+          console.log('No session, cannot fetch inquiries');
+          return [];
+        }
+      } catch (error) {
+        console.error('Error in inquiries query:', error);
+        return [];
+      }
+    },
   });
-  const inquiries = inquiriesData?.data || [];
+  const inquiries = inquiriesData || [];
 
   // Update status mutation
   const updateStatusMutation = useMutation({

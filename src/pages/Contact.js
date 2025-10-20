@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, Grid, TextField, Button, Card, Paper, MenuItem } from '@mui/material';
+import { Box, Container, Typography, Grid, TextField, Button, Card, Paper, MenuItem, Alert, Snackbar, CircularProgress } from '@mui/material';
 import { motion } from 'framer-motion';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
@@ -7,9 +7,13 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import SendIcon from '@mui/icons-material/Send';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
 import SEO from '../components/SEO';
 import HeroBanner from '../components/HeroBanner';
 import { breadcrumbSchema } from '../seo/structuredData';
+import { supabase } from '../lib/supabase';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -20,29 +24,193 @@ const Contact = () => {
     message: '',
   });
 
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: '',
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    }
+
+    if (formData.phone && !/^[\+]?[0-9\s\-\(\)]{7,}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
+
+    if (!validateForm()) {
+      setSnackbar({
+        open: true,
+        message: 'Please fix the errors in the form',
+        severity: 'error',
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Prepare email template parameters
+      const emailParams = {
+        from_name: formData.name.trim(),
+        from_email: formData.email.trim(),
+        from_phone: formData.phone.trim() || 'Not provided',
+        subject: formData.subject,
+        message: formData.message.trim(),
+        to_email: 'info@dabgroup.ae', // Your business email
+      };
+
+      // Submit to Supabase (Database)
+      const { data: dbData, error: dbError } = await supabase
+        .from('contact_inquiries')
+        .insert([
+          {
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone.trim() || null,
+            subject: formData.subject,
+            message: formData.message.trim(),
+            status: 'new',
+          }
+        ])
+        .select();
+
+      if (dbError) {
+        console.error('Supabase error:', dbError);
+        throw new Error(`Database Error: ${dbError.message}`);
+      }
+
+      console.log('Database submission successful:', dbData);
+
+      // Send Email via EmailJS
+      const emailjsServiceId = process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_demo';
+      const emailjsTemplateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_demo';
+      const emailjsPublicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'demo_key';
+
+      try {
+        const emailResult = await emailjs.send(
+          emailjsServiceId,
+          emailjsTemplateId,
+          emailParams,
+          emailjsPublicKey
+        );
+
+        console.log('Email sent successfully:', emailResult);
+
+        // Success - Both database and email successful
+        setSnackbar({
+          open: true,
+          message: 'Thank you for your message! We\'ll get back to you within 24 hours.',
+          severity: 'success',
+        });
+
+      } catch (emailError) {
+        console.error('EmailJS error:', emailError);
+
+        // Database successful but email failed
+        setSnackbar({
+          open: true,
+          message: 'Message saved successfully! We\'ll contact you soon (email notification failed).',
+          severity: 'warning',
+        });
+      }
+
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: 'general',
+        message: '',
+      });
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+
+      // Check if it's a database error or email error
+      if (error.message.includes('Database Error')) {
+        setSnackbar({
+          open: true,
+          message: 'Failed to save message to database. Please try again or contact us directly.',
+          severity: 'error',
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          message: 'Failed to send message. Please try again or contact us directly.',
+          severity: 'error',
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePhoneCall = () => {
+    const phoneNumber = '+971557696095';
+    window.open(`tel:${phoneNumber}`, '_self');
+  };
+
+  const handleWhatsApp = () => {
+    const phoneNumber = '+971557696095';
+    const message = encodeURIComponent('Hello! I would like to inquire about your services.');
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   const contactInfo = [
     {
       icon: <PhoneIcon />,
       title: 'Phone',
-      details: ['+971 XX XXX XXXX', '+971 XX XXX XXXX'],
+      details: ['+971 55 769 6095'],
       color: '#a58654',
     },
     {
       icon: <EmailIcon />,
       title: 'Email',
-      details: ['info@daralbarakah.com', 'support@daralbarakah.com'],
+      details: ['info@dabgroup.ae'],
       color: '#6fa8a0',
     },
     {
@@ -210,6 +378,8 @@ const Contact = () => {
                           value={formData.name}
                           onChange={handleChange}
                           required
+                          error={!!errors.name}
+                          helperText={errors.name}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               '&:hover fieldset': {
@@ -234,6 +404,8 @@ const Contact = () => {
                           value={formData.email}
                           onChange={handleChange}
                           required
+                          error={!!errors.email}
+                          helperText={errors.email}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               '&:hover fieldset': {
@@ -256,6 +428,8 @@ const Contact = () => {
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
+                          error={!!errors.phone}
+                          helperText={errors.phone}
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               '&:hover fieldset': {
@@ -331,17 +505,18 @@ const Contact = () => {
                           variant="contained"
                           size="large"
                           fullWidth
-                          endIcon={<SendIcon />}
+                          endIcon={loading ? <CircularProgress size={20} /> : <SendIcon />}
+                          disabled={loading}
                           sx={{
-                            bgcolor: '#a58654',
+                            bgcolor: loading ? '#ccc' : '#a58654',
                             py: 1.5,
                             fontSize: '1.1rem',
                             '&:hover': {
-                              bgcolor: '#8b6f47',
+                              bgcolor: loading ? '#ccc' : '#8b6f47',
                             },
                           }}
                         >
-                          Send Message
+                          {loading ? 'Sending...' : 'Send Message'}
                         </Button>
                       </Grid>
                     </Grid>
@@ -436,6 +611,7 @@ const Contact = () => {
                         <Button
                           variant="contained"
                           startIcon={<PhoneIcon />}
+                          onClick={handlePhoneCall}
                           sx={{
                             bgcolor: '#a58654',
                             '&:hover': {
@@ -448,6 +624,7 @@ const Contact = () => {
                         <Button
                           variant="outlined"
                           startIcon={<WhatsAppIcon />}
+                          onClick={handleWhatsApp}
                           sx={{
                             borderColor: 'white',
                             color: 'white',
@@ -498,6 +675,23 @@ const Contact = () => {
           </Grid>
         </Container>
       </Box>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -240,13 +240,13 @@ const Footer = () => {
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
                   <PhoneIcon sx={{ color: '#6fa8a0', mt: 0.5 }} />
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                    +971 XX XXX XXXX
+                    +971 55 769 6095
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
                   <EmailIcon sx={{ color: '#6fa8a0', mt: 0.5 }} />
                   <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                    info@daralbarakah.com
+                    info@dabgroup.ae
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>

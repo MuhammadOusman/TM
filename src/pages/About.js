@@ -9,8 +9,9 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import HandshakeIcon from '@mui/icons-material/Handshake';
 import SEO from '../components/SEO';
-import storyImg from '../assets/image.png';
+
 import founder1 from '../assets/founder1.jpg';
+import founder2 from '../assets/founder 2.jpg';
 import HeroBanner from '../components/HeroBanner';
 import { organizationSchema, breadcrumbSchema } from '../seo/structuredData';
 
@@ -22,6 +23,7 @@ const About = () => {
       experience: '4.5+ Years',
       portfolio: '150+ Units',
       image: founder1,
+      email: 'Talha@dabgroup.ae',
       bio: 'With over 4.5 years of experience in Dubai\'s real-estate market, Talha started from zero and became a recognized expert in sales, off-plan investments, and residential portfolio management.',
       expertise: 'He personally oversees a portfolio of more than 150 units, helping clients secure top-performing properties with consistent ROI. His strategic mindset and leadership are the driving forces behind Dar Al Barakah\'s rapid growth and client success.',
       specialties: ['Sales Expert', 'Off-Plan Investments', 'Portfolio Management', 'Strategic Leadership'],
@@ -31,7 +33,8 @@ const About = () => {
       role: 'Co-Founder & Director',
       experience: '4 Years',
       portfolio: '24 Buildings, 32 Villas, 29 Labor Camps',
-      image: founder1,
+      image: founder2,
+      email: 'Hamza@dabgroup.ae',
       bio: 'A real-estate professional with four years of extensive field experience, Hamza specializes in building sales, residential & commercial leasing, and institutional investments.',
       expertise: 'He currently manages 24 buildings, 32 villas, and 29 labor camps, ensuring operational efficiency, tenant satisfaction, and long-term sustainability. His expertise strengthens the foundation of Dar Al Barakah\'s property-management operations.',
       specialties: ['Building Sales', 'Property Management', 'Commercial Leasing', 'Operational Excellence'],
@@ -173,39 +176,7 @@ const About = () => {
                 </Typography>
               </motion.div>
             </Box>
-            <Box
-              sx={{
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: { xs: 'center', md: 'flex-start' },
-                justifyContent: { xs: 'center', md: 'flex-end' },
-                width: { xs: '100%', md: 'auto' },
-                mt: { xs: 4, md: 0 },
-              }}
-            >
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
-              >
-                <Box
-                  component="img"
-                  src={storyImg}
-                  alt="Dar Al Barakah Story"
-                  sx={{
-                    borderRadius: 8,
-                    boxShadow: '0 12px 48px rgba(0,0,0,0.18)',
-                    width: { xs: '260px', sm: '340px', md: '420px' },
-                    height: { xs: '260px', sm: '340px', md: '420px' },
-                    objectFit: 'contain',
-                    background: '#fff',
-                    p: 2,
-                    display: 'block',
-                  }}
-                />
-              </motion.div>
-            </Box>
+
           </Box>
         </Container>
       </Box>
@@ -424,7 +395,7 @@ const About = () => {
                           style={{
                             width: '100%',
                             height: '100%',
-                            objectFit: 'cover',
+                            objectFit: 'contain',
                             objectPosition: 'center',
                             display: 'block',
                           }}
@@ -456,11 +427,24 @@ const About = () => {
                           sx={{
                             color: '#6fa8a0',
                             fontWeight: 600,
-                            mb: 2,
+                            mb: 1,
                           }}
                         >
                           {founder.role}
                         </Typography>
+                        {founder.email && (
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: '#a58654',
+                              fontWeight: 500,
+                              mb: 2,
+                              fontSize: '0.9rem',
+                            }}
+                          >
+                            📧 {founder.email}
+                          </Typography>
+                        )}
                         <Typography
                           variant="body2"
                           sx={{

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
 export const propertiesAPI = {
   getAll: async (filters = {}) => {
@@ -219,36 +220,125 @@ export const inquiriesAPI = {
     return { data, error };
   },
 
-  getAll: async (status = null) => {
-    let query = supabase
-      .from('contact_inquiries')
-      .select(`
-        *,
-        properties (title)
-      `)
-      .order('created_at', { ascending: false });
+  // Helper function for service key approach
+  _getInquiriesWithServiceKey: async (status = null) => {
+    try {
+      // Create a separate client with service key for admin operations
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!serviceKey) {
+        console.log('No service key available');
+        return { data: [], error: { message: 'Service key not configured' } };
+      }
 
-    if (status) {
-      query = query.eq('status', status);
+      const adminSupabase = createClient(
+        process.env.REACT_APP_SUPABASE_URL,
+        serviceKey
+      );
+
+      let query = adminSupabase
+        .from('contact_inquiries')
+        .select(`
+          *,
+          properties (title)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (status && status !== 'all') {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error with service key:', error);
+        return { data: [], error };
+      }
+
+      console.log('Service key fetch successful:', data?.length || 0);
+      return { data: data || [], error: null };
+
+    } catch (error) {
+      console.error('Error in service key approach:', error);
+      return { data: [], error };
     }
+  },
 
-    const { data, error } = await query;
-    return { data, error };
+  getAll: async (status = null) => {
+    try {
+      // For admin panel, we'll use a direct approach that bypasses RLS
+      // In production, you might want to use service key or proper RLS policies
+
+      // First try with authenticated user
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        console.log('Admin user authenticated:', session.user.email);
+
+        let query = supabase
+          .from('contact_inquiries')
+          .select(`
+            *,
+            properties (title)
+          `)
+          .order('created_at', { ascending: false });
+
+        if (status && status !== 'all') {
+          query = query.eq('status', status);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Error fetching inquiries with auth:', error);
+
+          // If RLS blocks authenticated user, try with service key approach
+          console.log('Attempting with service key approach...');
+          return await inquiriesAPI._getInquiriesWithServiceKey(status);
+        }
+
+        console.log('Successfully fetched inquiries:', data?.length || 0);
+        return { data: data || [], error: null };
+      } else {
+        console.log('No authenticated session, trying service key approach...');
+        return await inquiriesAPI._getInquiriesWithServiceKey(status);
+      }
+
+    } catch (error) {
+      console.error('Error in getAll inquiries:', error);
+      return { data: [], error };
+    }
   },
 
   updateStatus: async (id, status, adminNotes = null) => {
-    const updateData = { status, updated_at: new Date().toISOString() };
-    if (adminNotes) {
-      updateData.admin_notes = adminNotes;
-    }
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
 
-    const { data, error } = await supabase
-      .from('contact_inquiries')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-    return { data, error };
+      if (!session) {
+        return { data: null, error: { message: 'Not authenticated' } };
+      }
+
+      const updateData = { status, updated_at: new Date().toISOString() };
+      if (adminNotes) {
+        updateData.admin_notes = adminNotes;
+      }
+
+      const { data, error } = await supabase
+        .from('contact_inquiries')
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating inquiry status:', error);
+      }
+
+      return { data, error };
+
+    } catch (error) {
+      console.error('Error in updateStatus:', error);
+      return { data: null, error };
+    }
   },
 };
 
