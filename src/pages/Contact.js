@@ -121,10 +121,11 @@ const Contact = () => {
 
       console.log('Database submission successful:', dbData);
 
-      // Send Email via EmailJS
-      const emailjsServiceId = process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_demo';
-      const emailjsTemplateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_demo';
-      const emailjsPublicKey = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'demo_key';
+
+      // Use provided EmailJS credentials directly
+      const emailjsServiceId = 'info@dabgroup.ae';
+      const emailjsTemplateId = 'template_x3kwwkk';
+      const emailjsPublicKey = 'KfFTQTPNLufJDQRkZ';
 
       try {
         const emailResult = await emailjs.send(
