@@ -71,16 +71,14 @@ const Home = () => {
     },
   ];
 
-  // Fetch featured properties
+  // Fetch only featured properties (and available)
   const { data: propertiesData, isLoading: propertiesLoading } = useQuery({
     queryKey: ['featured-properties'],
-    queryFn: () => propertiesAPI.getAll(),
+    queryFn: () => propertiesAPI.getAll({ featured: true }),
   });
 
-  // Filter only featured properties and limit to 4
-  const featuredProperties = propertiesData?.data
-    ?.filter(property => property.featured === true)
-    ?.slice(0, 4) || [];
+  // Limit to 4 featured properties
+  const featuredProperties = propertiesData?.data?.slice(0, 4) || [];
 
   return (
     <Box>
@@ -475,7 +473,7 @@ const Home = () => {
 
       {/* Features Section */}
       <Box sx={{ py: 12, bgcolor: '#1A2027' }}>
-        <Container maxWidth="xl">
+  <Container maxWidth="xl" sx={{ maxWidth: { xs: '100%', md: 1400 } }}>
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -516,9 +514,9 @@ const Home = () => {
             </motion.div>
           </Box>
 
-          <Grid container spacing={4} sx={{ px: { xs: 2, sm: 0 } }}>
+          <Grid container spacing={4} sx={{ px: { xs: 2, sm: 0 } }} justifyContent="center">
             {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
+              <Grid item xs={12} sm={6} md={6} key={index} display="flex" alignItems="stretch">
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 0.9 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
@@ -528,6 +526,7 @@ const Home = () => {
                     ease: [0.43, 0.13, 0.23, 0.96]
                   }}
                   viewport={{ once: true, margin: "-50px" }}
+                  style={{ display: 'flex', flex: 1 }}
                 >
                   <Card
                     component={motion.div}
@@ -537,44 +536,33 @@ const Home = () => {
                     }}
                     sx={{
                       height: '100%',
+                      minHeight: 260,
+                      maxWidth: { xs: '100%', md: 370 },
+                      mx: 'auto',
                       display: 'flex',
                       flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                       textAlign: 'center',
                       p: { xs: 3, md: 4 },
                       borderRadius: 5,
                       border: '1px solid',
-                      borderColor: 'rgba(212, 175, 55, 0.15)',
-                      background: 'linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(252,252,252,1) 100%)',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
-                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      cursor: 'pointer',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: '4px',
-                        background: 'linear-gradient(90deg, #D4AF37 0%, #E0C66F 100%)',
-                        transform: 'scaleX(0)',
-                        transformOrigin: 'left',
-                        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                      },
+                      borderColor: 'rgba(165, 134, 84, 0.2)',
+                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                      background: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',
+                      mb: 2,
+                      transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
                       '&:hover': {
-                        boxShadow: '0 20px 60px rgba(212, 175, 55, 0.2), 0 0 0 1px rgba(212, 175, 55, 0.3)',
-                        borderColor: 'rgba(212, 175, 55, 0.4)',
-                        background: 'linear-gradient(135deg, #ffffff 0%, rgba(212, 175, 55, 0.03) 100%)',
-                        '&::before': {
-                          transform: 'scaleX(1)',
-                        },
+                        boxShadow: '0 16px 48px rgba(165, 134, 84, 0.25)',
+                        borderColor: 'rgba(165, 134, 84, 0.5)',
+                        background: 'linear-gradient(135deg, #34495e 0%, #2c3e50 100%)',
+                        transform: 'translateY(-8px)',
                         '& .icon-wrapper': {
-                          transform: 'scale(1.15) rotate(5deg)',
-                          boxShadow: '0 12px 32px rgba(212, 175, 55, 0.5)',
+                          bgcolor: 'rgba(165, 134, 84, 0.3)',
+                          boxShadow: '0 12px 32px rgba(165, 134, 84, 0.4)',
                         },
                         '& .feature-title': {
-                          color: '#B18F2A',
+                          color: '#D4AF37',
                         },
                       },
                     }}
@@ -585,31 +573,16 @@ const Home = () => {
                         width: { xs: 80, md: 90 },
                         height: { xs: 80, md: 90 },
                         borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #D4AF37 0%, #E0C66F 50%, #D4AF37 100%)',
+                        bgcolor: 'rgba(165, 134, 84, 0.2)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        margin: '0 auto 24px',
-                        color: '#1A2027',
-                        boxShadow: '0 8px 24px rgba(212, 175, 55, 0.35)',
-                        transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                        position: 'relative',
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          inset: -3,
-                          borderRadius: '50%',
-                          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(224, 198, 111, 0.1))',
-                          zIndex: -1,
-                          opacity: 0,
-                          transition: 'opacity 0.3s',
-                        },
-                        '&:hover::after': {
-                          opacity: 1,
-                        },
+                        mb: 3,
+                        boxShadow: '0 8px 24px rgba(165, 134, 84, 0.15)',
+                        transition: 'all 0.4s',
                         '& svg': {
-                          fontSize: { xs: '2.5rem', md: '2.8rem' },
-                          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                          color: '#D4AF37',
+                          fontSize: '2.5rem',
                         },
                       }}
                     >
@@ -620,7 +593,7 @@ const Home = () => {
                       variant="h6"
                       sx={{
                         fontWeight: 700,
-                        color: 'primary.main',
+                        color: '#D4AF37',
                         mb: 2,
                         fontSize: { xs: '1.1rem', md: '1.25rem' },
                         transition: 'color 0.3s',
@@ -631,7 +604,7 @@ const Home = () => {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: 'text.secondary',
+                        color: 'rgba(255, 255, 255, 0.8)',
                         lineHeight: 1.8,
                         fontSize: { xs: '0.9rem', md: '0.95rem' },
                       }}

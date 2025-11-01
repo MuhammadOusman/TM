@@ -292,6 +292,7 @@ const FAQ = () => {
                 <Button
                   variant="outlined"
                   size="large"
+                  href="tel:+971557696095"
                   sx={{
                     borderColor: 'white',
                     color: 'white',
@@ -305,7 +306,7 @@ const FAQ = () => {
                     },
                   }}
                 >
-                  Call: +971 XX XXX XXXX
+                  Call: +971 55 769 6095
                 </Button>
               </Box>
             </Card>
