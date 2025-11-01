@@ -71,25 +71,14 @@ const Home = () => {
     },
   ];
 
-  // Fetch only featured properties (and available)
+  // Fetch only featured properties
   const { data: propertiesData, isLoading: propertiesLoading, error: propertiesError } = useQuery({
     queryKey: ['featured-properties'],
-    queryFn: async () => {
-      console.log('🔍 Fetching featured properties...');
-      const result = await propertiesAPI.getAll({ featured: true });
-      console.log('📊 Properties API result:', result);
-      console.log('📦 Properties data:', result?.data);
-      console.log('🔢 Number of properties:', result?.data?.length);
-      return result;
-    },
+    queryFn: () => propertiesAPI.getAll({ featured: true }),
   });
 
   // Limit to 4 featured properties
   const featuredProperties = propertiesData?.data?.slice(0, 4) || [];
-  
-  console.log('✨ Featured properties for display:', featuredProperties);
-  console.log('⏳ Loading state:', propertiesLoading);
-  console.log('❌ Error state:', propertiesError);
 
   return (
     <Box>
@@ -673,14 +662,6 @@ const Home = () => {
             </motion.div>
           </Box>
 
-          {(() => {
-            console.log('🎨 Rendering featured properties section');
-            console.log('⏳ Is Loading?', propertiesLoading);
-            console.log('📦 Featured Properties Count:', featuredProperties.length);
-            console.log('❌ Has Error?', propertiesError);
-            return null;
-          })()}
-          
           {propertiesLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
               <CircularProgress sx={{ color: '#D4AF37' }} />
