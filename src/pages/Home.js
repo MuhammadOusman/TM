@@ -72,13 +72,24 @@ const Home = () => {
   ];
 
   // Fetch only featured properties (and available)
-  const { data: propertiesData, isLoading: propertiesLoading } = useQuery({
+  const { data: propertiesData, isLoading: propertiesLoading, error: propertiesError } = useQuery({
     queryKey: ['featured-properties'],
-    queryFn: () => propertiesAPI.getAll({ featured: true }),
+    queryFn: async () => {
+      console.log('🔍 Fetching featured properties...');
+      const result = await propertiesAPI.getAll({ featured: true });
+      console.log('📊 Properties API result:', result);
+      console.log('📦 Properties data:', result?.data);
+      console.log('🔢 Number of properties:', result?.data?.length);
+      return result;
+    },
   });
 
   // Limit to 4 featured properties
   const featuredProperties = propertiesData?.data?.slice(0, 4) || [];
+  
+  console.log('✨ Featured properties for display:', featuredProperties);
+  console.log('⏳ Loading state:', propertiesLoading);
+  console.log('❌ Error state:', propertiesError);
 
   return (
     <Box>
@@ -662,9 +673,26 @@ const Home = () => {
             </motion.div>
           </Box>
 
+          {(() => {
+            console.log('🎨 Rendering featured properties section');
+            console.log('⏳ Is Loading?', propertiesLoading);
+            console.log('📦 Featured Properties Count:', featuredProperties.length);
+            console.log('❌ Has Error?', propertiesError);
+            return null;
+          })()}
+          
           {propertiesLoading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
               <CircularProgress sx={{ color: '#D4AF37' }} />
+            </Box>
+          ) : propertiesError ? (
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+              <Typography variant="body1" sx={{ color: 'error.main', mb: 2 }}>
+                Error loading properties: {propertiesError.message}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Please check the console for more details.
+              </Typography>
             </Box>
           ) : featuredProperties.length > 0 ? (
             <Box

@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 export const propertiesAPI = {
   getAll: async (filters = {}) => {
+    console.log('🔧 API getAll called with filters:', filters);
+    
     let query = supabase
       .from('properties')
       .select('*')
@@ -16,10 +18,17 @@ export const propertiesAPI = {
       query = query.eq('type', filters.type);
     }
     if (filters.featured) {
+      console.log('⭐ Filtering for featured properties');
       query = query.eq('featured', true);
     }
 
     const { data, error } = await query;
+    console.log('📤 API returning:', { dataCount: data?.length, error });
+    
+    if (error) {
+      console.error('❌ Supabase error:', error);
+    }
+    
     return { data, error };
   },
 
