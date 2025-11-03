@@ -83,37 +83,37 @@ const Navbar = () => {
           <Box
             component="img"
             src={logo}
-            alt="Dar Al Barakah Logo"
+            alt="DAB Group Logo"
             sx={{
               height: 45,
               width: 'auto',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 2px 4px rgba(165, 134, 84, 0.3))',
             }}
           />
           <Box>
             <Typography 
               variant="h6" 
               sx={{ 
-                fontFamily: 'Playfair Display', 
-                color: '#a58654',
+                color: '#D4AF37',
                 fontWeight: 700,
-                lineHeight: 1.2,
+                lineHeight: 1,
+                letterSpacing: 2,
               }}
             >
-              DAR ALBARAKAH
+              DAB <Box component="span" sx={{ fontWeight: 300, ml: 0.5 }}>GROUP</Box>
             </Typography>
             <Typography
               variant="caption"
               sx={{
-                color: '#6fa8a0',
-                fontWeight: 500,
-                letterSpacing: 1,
-                fontSize: '0.65rem',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontWeight: 300,
+                letterSpacing: 2,
+                fontSize: '0.55rem',
                 display: 'block',
+                mt: 0.3,
               }}
             >
-              Holiday Home LLC
+              WHERE LUXURY MEETS LEGACY
             </Typography>
           </Box>
         </Box>
@@ -174,9 +174,9 @@ const Navbar = () => {
       <HideOnScroll>
         <AppBar
           position="fixed"
-          elevation={scrolled ? 4 : 0}
+          elevation={0}
           sx={{
-            backgroundColor: scrolled ? 'rgba(44, 62, 80, 0.98)' : 'transparent',
+            backgroundColor: scrolled ? 'rgba(44, 62, 80, 0.95)' : 'transparent',
             backdropFilter: scrolled ? 'blur(10px)' : 'none',
             transition: 'all 0.3s ease-in-out',
             borderBottom: scrolled ? '1px solid rgba(165, 134, 84, 0.2)' : 'none',
@@ -202,45 +202,45 @@ const Navbar = () => {
                     display: 'flex',
                     alignItems: 'center',
                     textDecoration: 'none',
-                    gap: 2,
+                    gap: 1.5,
                   }}
                 >
                   <Box
                     component="img"
                     src={logo}
-                    alt="Dar Al Barakah Logo"
+                    alt="DAB Group Logo"
                     sx={{
-                      height: 60,
-                      width: 'auto',
+                      height: 50,
+                      width: 50,
                       objectFit: 'contain',
-                      filter: 'drop-shadow(0 2px 8px rgba(165, 134, 84, 0.4))',
+                      filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))',
                     }}
                   />
                   <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <Typography
-                      variant="h6"
                       sx={{
                         color: 'white',
                         fontWeight: 700,
-                        fontFamily: 'Playfair Display',
-                        lineHeight: 1.2,
-                        textShadow: scrolled ? 'none' : '2px 2px 4px rgba(0,0,0,0.3)',
-                        letterSpacing: 0.5,
+                        lineHeight: 1.1,
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                        letterSpacing: 4,
+                        fontSize: '1.25rem',
                       }}
                     >
-                      DAR ALBARAKAH
+                      DAB <Box component="span" sx={{ fontWeight: 300, letterSpacing: 4 }}>GROUP</Box>
                     </Typography>
                     <Typography
                       variant="caption"
                       sx={{
-                        color: '#6fa8a0',
-                        fontWeight: 500,
-                        letterSpacing: 1.5,
-                        textShadow: scrolled ? 'none' : '1px 1px 2px rgba(0,0,0,0.3)',
-                        fontSize: '0.7rem',
+                        color: 'rgba(255, 255, 255, 0.75)',
+                        fontWeight: 300,
+                        letterSpacing: 2,
+                        textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                        fontSize: '0.55rem',
+                        mt: 0.2,
                       }}
                     >
-                      Holiday Home LLC
+                      WHERE LUXURY MEETS LEGACY
                     </Typography>
                   </Box>
                 </Box>
