@@ -33,8 +33,12 @@ export const propertiesAPI = {
 
     if (data && !error) {
       try {
-        await supabase.rpc('increment_property_views', { property_uuid: id });
+        const { error: rpcError } = await supabase.rpc('increment_property_views', { property_uuid: id });
+        if (rpcError) {
+          console.error('Error incrementing property views:', rpcError);
+        }
       } catch (err) {
+        console.error('Exception incrementing property views:', err);
       }
     }
 
@@ -73,7 +77,14 @@ export const propertiesAPI = {
       .from('properties')
       .select('*')
       .order('created_at', { ascending: false });
-    return { data, error };
+    
+    // Map views_count to views for frontend compatibility
+    const mappedData = data?.map(property => ({
+      ...property,
+      views: property.views_count
+    })) || [];
+    
+    return { data: mappedData, error };
   },
 };
 
@@ -110,7 +121,14 @@ export const blogAPI = {
       .single();
 
     if (data && !error) {
-      await supabase.rpc('increment_blog_views', { blog_uuid: data.id });
+      try {
+        const { error: rpcError } = await supabase.rpc('increment_blog_views', { blog_uuid: data.id });
+        if (rpcError) {
+          console.error('Error incrementing blog views:', rpcError);
+        }
+      } catch (err) {
+        console.error('Exception incrementing blog views:', err);
+      }
     }
 
     return { data, error };
@@ -160,7 +178,14 @@ export const blogAPI = {
         agents (name, role)
       `)
       .order('created_at', { ascending: false });
-    return { data, error };
+    
+    // Map views_count to views for frontend compatibility
+    const mappedData = data?.map(post => ({
+      ...post,
+      views: post.views_count
+    })) || [];
+    
+    return { data: mappedData, error };
   },
 };
 
@@ -367,23 +392,39 @@ export const analyticsAPI = {
         supabase.from('contact_inquiries').select('id', { count: 'exact', head: true })
       ]);
 
-      const { count: newInquiriesCount } = await supabase
-        .from('contact_inquiries')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'new');
+      // Get inquiry counts by status
+      const [newInquiries, inProgressInquiries, respondedInquiries] = await Promise.all([
+        supabase.from('contact_inquiries').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+        supabase.from('contact_inquiries').select('id', { count: 'exact', head: true }).eq('status', 'in-progress'),
+        supabase.from('contact_inquiries').select('id', { count: 'exact', head: true }).eq('status', 'responded')
+      ]);
+
+      // Calculate total views from properties and blog posts
+      const { data: propertyViews } = await supabase
+        .from('properties')
+        .select('views_count');
+      
+      const { data: blogViews } = await supabase
+        .from('blog_posts')
+        .select('views_count');
+
+      const totalPropertyViews = propertyViews?.reduce((sum, prop) => sum + (prop.views_count || 0), 0) || 0;
+      const totalBlogViews = blogViews?.reduce((sum, post) => sum + (post.views_count || 0), 0) || 0;
+      const totalViews = totalPropertyViews + totalBlogViews;
 
       const stats = {
         totalProperties: properties.count || 0,
         totalBlogPosts: blogPosts.count || 0,
         totalInquiries: inquiries.count || 0,
-        newInquiries: newInquiriesCount || 0,
-        totalViews: 0,
-        inProgressInquiries: 0,
-        respondedInquiries: 0
+        newInquiries: newInquiries.count || 0,
+        inProgressInquiries: inProgressInquiries.count || 0,
+        respondedInquiries: respondedInquiries.count || 0,
+        totalViews: totalViews
       };
 
       return { data: stats, error: null };
     } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
       return {
         data: {
           totalProperties: 0,
@@ -431,7 +472,14 @@ export const analyticsAPI = {
       .select('id, title, views_count, inquiries_count, status')
       .order('views_count', { ascending: false })
       .limit(limit);
-    return { data: data || [], error };
+    
+    // Map views_count to views for frontend compatibility
+    const mappedData = data?.map(property => ({
+      ...property,
+      views: property.views_count
+    })) || [];
+    
+    return { data: mappedData, error };
   },
 
   getTopBlogPosts: async (limit = 5) => {
@@ -440,7 +488,14 @@ export const analyticsAPI = {
       .select('id, title, views_count, status')
       .order('views_count', { ascending: false })
       .limit(limit);
-    return { data: data || [], error };
+    
+    // Map views_count to views for frontend compatibility
+    const mappedData = data?.map(post => ({
+      ...post,
+      views: post.views_count
+    })) || [];
+    
+    return { data: mappedData, error };
   },
 };
 

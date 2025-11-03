@@ -339,32 +339,16 @@ const PropertyDetail = () => {
                   fullWidth
                   variant="contained"
                   size="large"
-                  startIcon={<CalendarMonthIcon />}
+                  startIcon={<PhoneIcon />}
+                  component="a"
+                  href="tel:+971557696095"
                   sx={{
                     bgcolor: '#a58654',
                     py: 1.5,
-                    mb: 2,
+                    mb: 3,
+                    textDecoration: 'none',
                     '&:hover': {
                       bgcolor: '#8b6f47',
-                    },
-                  }}
-                >
-                  Book Now
-                </Button>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  size="large"
-                  startIcon={<PhoneIcon />}
-                  sx={{
-                    borderColor: '#a58654',
-                    color: '#a58654',
-                    py: 1.5,
-                    mb: 3,
-                    '&:hover': {
-                      borderColor: '#8b6f47',
-                      bgcolor: 'rgba(165, 134, 84, 0.05)',
                     },
                   }}
                 >
@@ -383,9 +367,19 @@ const PropertyDetail = () => {
                       <PhoneIcon sx={{ color: '#6fa8a0' }} />
                     </ListItemIcon>
                     <ListItemText
-                      primary="+971 XX XXX XXXX"
+                      primary={
+                        <a 
+                          href="tel:+971557696095" 
+                          style={{ 
+                            color: 'inherit', 
+                            textDecoration: 'none',
+                            fontWeight: 600 
+                          }}
+                        >
+                          +971 55 769 6095
+                        </a>
+                      }
                       secondary="Call us anytime"
-                      primaryTypographyProps={{ fontWeight: 600 }}
                     />
                   </ListItem>
                   <ListItem sx={{ px: 0 }}>
@@ -393,9 +387,19 @@ const PropertyDetail = () => {
                       <EmailIcon sx={{ color: '#6fa8a0' }} />
                     </ListItemIcon>
                     <ListItemText
-                      primary="info@daralbarakah.com"
+                      primary={
+                        <a 
+                          href="mailto:info@daralbarakah.com" 
+                          style={{ 
+                            color: 'inherit', 
+                            textDecoration: 'none',
+                            fontWeight: 600 
+                          }}
+                        >
+                          info@daralbarakah.com
+                        </a>
+                      }
                       secondary="Send us an email"
-                      primaryTypographyProps={{ fontWeight: 600 }}
                     />
                   </ListItem>
                 </List>
